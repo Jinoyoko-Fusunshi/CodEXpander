@@ -2,6 +2,7 @@
 #include "test_system.h"
 #include "test_source_file_reader.h"
 
+using namespace CodEXpander::Tests;
 using std::vector, std::move;
 
 vector<TestMethod> GetAllTests();
@@ -12,6 +13,8 @@ vector<TestMethod> GetAllTests();
 int main(int argumentCount, char* arguments[]) {
     vector<TestMethod> allTests = GetAllTests();
     RunTests(move(allTests));
+
+    return 0;
 }
 
 vector<TestMethod> GetAllTests() {
@@ -25,5 +28,5 @@ vector<TestMethod> GetAllTests() {
         CreateNamedTestMethod(TestSourceFileReader_ReadHeaderFile_HeaderIncludes_FoundExternalTokens_TokensAreCorrect)
     };
 
-    return tests;
+    return std::move(tests);
 }

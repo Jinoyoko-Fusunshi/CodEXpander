@@ -1,3 +1,5 @@
 #pragma once
 
-constexpr unsigned short int maxstringSize = 255;
+namespace CodEXpander::Core {
+    constexpr unsigned short int maxstringSize = 255;
+}

@@ -2,7 +2,9 @@
 
 #include "exception.h"
 
-class AssertionException final : public Exception {
-public:
-    AssertionException(std::string message) : Exception(std::move(message)) {}
-};
+namespace CodEXpander::Tests {
+    class AssertionException final : public CodEXpander::Core::Exception {
+    public:
+        AssertionException(std::string message) : Exception(std::move(message)) {}
+    };
+}
