@@ -1,0 +1,21 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "cppdbg",
+            "cwd": "${workspaceRoot}/codeexpander_tests",
+            "program": "${workspaceRoot}/codeexpander_tests/bin/codeexpander_tests",
+            "request": "launch",
+            "name": "Codeexpander Tests Debug",
+            "preLaunchTask": "Build CodeExpander Tests Debug"
+        },
+        {
+            "type": "cppdbg",
+            "cwd": "${workspaceRoot}/codeexpander_tests",
+            "program": "${workspaceRoot}/codeexpander_tests/bin/codeexpander_tests",
+            "request": "launch",
+            "name": "Codeexpander Tests Release",
+            "preLaunchTask": "Build CodeExpander Tests Release"
+        }
+    ]
+}

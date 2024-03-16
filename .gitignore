@@ -1,0 +1,7 @@
+# output files
+*.o
+\bin
+\objects
+
+# IDE files
+\.idea
