@@ -1,9 +1,10 @@
 #include <fstream>
 #include <iostream>
+#include <filesystem>
 #include <optional>
 #include "source_file_reader.h"
 
-using std::optional, std::string, std::nullopt, std::vector, std::ifstream;
+using std::optional, std::string, std::nullopt, std::vector, std::ifstream, std::filesystem::path, std::filesystem::exists;
 
 namespace CodEXpander::Core {
     enum class IncludeTagType {
@@ -80,6 +81,29 @@ namespace CodEXpander::Core {
         }
 
         return foundTokens;
+    }
+
+    vector<string> GetHeaderContent(const HeaderToken headerToken, const string workingDirectory) {
+        vector<string> headerContent; 
+        if (headerToken.headerType == HeaderFileType::System)
+            return std::move(headerContent);
+
+        string includeDirectory = workingDirectory + string("/include");
+        path includePath(includeDirectory);
+        if (!exists(includePath))
+            return std::move(headerContent);
+        
+        string headerFileName = includeDirectory + "/" + headerToken.fileName;
+        path headerFilePath(headerFileName);
+        if (!exists(headerFilePath))
+            return std::move(headerContent);
+        
+        vector<string> fileContent = ReadFileByLines(headerFileName);
+        if (fileContent.size() == 0)
+            return std::move(headerContent);
+
+        headerContent = fileContent; 
+        return std::move(headerContent);
     }
 
     size_t FindIncludeMacro(const string &line) {

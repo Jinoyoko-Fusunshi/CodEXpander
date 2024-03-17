@@ -8,4 +8,6 @@ namespace CodEXpander::Core {
     std::vector<std::string> ReadFileByLines(const std::string& filePath);
 
     std::vector<HeaderToken> GetTokensFromFile(const std::string& filePath);
+
+    std::vector<std::string> GetHeaderContent(const HeaderToken headerToken, const std::string workingDirectory);
 }
