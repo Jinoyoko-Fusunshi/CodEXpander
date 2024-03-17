@@ -2,7 +2,6 @@
 
 #include <string>
 #include <vector>
-#include "assertion_exception.h"
 
 namespace CodEXpander::Tests {
     struct TestMethod {
@@ -13,6 +12,8 @@ namespace CodEXpander::Tests {
     TestMethod CreateTestMethod(std::string name, void (*callback)());
 
     void RunTests(std::vector<TestMethod> tests);
+
+    void AssertStringsAreEqual(const std::string &expectedValue, const std::string &actualValue);
 
     void PrintLineInfoMessage(std::vector<std::string> messageTraceLogs, std::string message);
 

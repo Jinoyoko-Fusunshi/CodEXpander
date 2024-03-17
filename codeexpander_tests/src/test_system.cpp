@@ -1,5 +1,6 @@
 #include <iostream>
 #include "test_system.h"
+#include "assertion_exception.h"
 
 using std::string, std::vector, std::cout, std::to_string;
 
@@ -57,6 +58,16 @@ namespace CodEXpander::Tests {
         PrintMessage(outputLogs, " of ", "\033[1;37m");
         PrintInfoMessage(outputLogs, to_string(tests.size()));
         PrintLineMessage(outputLogs, "", "\033[0m");
+    }
+
+    void AssertStringsAreEqual(const std::string &expectedValue, const std::string &actualValue) {
+        auto valueMatches = expectedValue == actualValue;
+        if (!valueMatches) {
+            std::string message = std::string("Assertion failed:") + std::string("\n\t\t\texpected value: ")
+                + expectedValue + std::string("\n\t\t\tactual value: \t") + actualValue;
+
+            throw AssertionException(message);
+        }
     }
 
     void PrintLineInfoMessage(vector<string> messageTraceLogs, string message) {
