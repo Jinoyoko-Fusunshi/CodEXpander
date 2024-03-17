@@ -62,7 +62,6 @@ all_tests_release: all_core_release clean_tests build_tests_release copy_resourc
 clean_tests:
 	rm -rf $(test_object_dir)
 	rm -rf $(test_bin_dir)
-	rm -rf $(test_bin_res_dir)
 	mkdir -p $(test_object_dir)
 	mkdir -p $(test_bin_dir)
 
@@ -77,7 +76,7 @@ $(test_object_files): $(test_object_dir)/%.o: $(test_source_dir)/%.cpp
 
 copy_resources_tests:
 	mkdir -p $(test_bin_res_dir)
-	cp -r $(test_res_dir) $(test_bin_res_dir)
+	cp -r $(test_res_dir) $(test_bin_dir)
 
 debug_build:
 	$(eval CC=g++ -g)

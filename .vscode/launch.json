@@ -3,7 +3,7 @@
     "configurations": [
         {
             "type": "cppdbg",
-            "cwd": "${workspaceRoot}/codeexpander_tests",
+            "cwd": "${workspaceRoot}/codeexpander_tests/bin",
             "program": "${workspaceRoot}/codeexpander_tests/bin/codeexpander_tests",
             "request": "launch",
             "name": "Codeexpander Tests Debug",
@@ -11,7 +11,7 @@
         },
         {
             "type": "cppdbg",
-            "cwd": "${workspaceRoot}/codeexpander_tests",
+            "cwd": "${workspaceRoot}/codeexpander_tests/bin",
             "program": "${workspaceRoot}/codeexpander_tests/bin/codeexpander_tests",
             "request": "launch",
             "name": "Codeexpander Tests Release",
