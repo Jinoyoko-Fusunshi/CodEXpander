@@ -119,4 +119,28 @@ namespace CodEXpander::Tests {
         AssertStringsAreEqual(expectedHeaderFileName, tokens[0].fileName);
         AssertAreEqual<int>(expectedHeaderType, static_cast<int>(tokens[0].headerType));
     }
+
+    void TestSourceFileReader_ReadSourceFile_HeaderFileNotExists_GetHeaderContent_EmptyResult() {
+        const size_t expectedHeaderContentSize = 0;
+        const string filePath = "./res/source_file_with_local_not_existing_header.cpp";
+        const string workingDirectory = "./res";
+
+        vector<HeaderToken> tokens = GetTokensFromFile(filePath);
+        const vector<string> headerContent = GetHeaderContent(tokens[0], workingDirectory);
+
+        AssertAreEqual<size_t>(expectedHeaderContentSize, headerContent.size());        
+    }
+
+    void TestSourceFileReader_ReadSourceFile_HeaderFileExists_GetHeaderContent_ContentIsCorrect() {
+        const size_t expectedHeaderContentSize = 5;
+        const string filePath = "./res/source_file_with_two_local_headers.cpp";
+        const string workingDirectory = "./res";
+
+        vector<HeaderToken> tokens = GetTokensFromFile(filePath);
+        const vector<string> headerOneContent = GetHeaderContent(tokens[0], workingDirectory);
+        const vector<string> headerTwoContent = GetHeaderContent(tokens[1], workingDirectory);
+
+        AssertAreEqual<size_t>(expectedHeaderContentSize, headerOneContent.size());
+        AssertAreEqual<size_t>(expectedHeaderContentSize, headerTwoContent.size());
+    }
 }
