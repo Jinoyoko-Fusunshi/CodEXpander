@@ -4,14 +4,24 @@
         {
             "label": "Build CodeExpander Tests Debug",
             "command": "make",
-            "args": ["all_tests"],
-            "type": "shell"
+            "args": [
+                "all_tests"
+            ],
+            "type": "shell",
+            "problemMatcher": [
+                "$gcc"
+            ]
         },
         {
             "label": "Build CodeExpander Tests Release",
             "command": "make",
-            "args": ["all_tests_release"],
-            "type": "shell"
+            "args": [
+                "all_tests_release"
+            ],
+            "type": "shell",
+            "problemMatcher": [
+                "$gcc"
+            ]
         }
     ]
 }
