@@ -3,6 +3,7 @@
 #include <filesystem>
 #include <optional>
 #include "source_file_reader.h"
+#include "declarations.h"
 
 using std::optional, std::string, std::nullopt, std::vector, std::ifstream, std::filesystem::path, std::filesystem::exists;
 
@@ -14,18 +15,18 @@ namespace CodEXpander::Core {
     };
 
     struct IncludeEntry {
-        size_t position;
+        u64 position;
         HeaderFileType headerType;
         IncludeTagType tagType;
     };
 
-    size_t FindIncludeMacro(const string &line);
+    u64 FindIncludeMacro(const string &line);
 
-    optional<IncludeEntry> FindIncludeStartingTag(const string &line, size_t startPosition);
+    optional<IncludeEntry> FindIncludeStartingTag(const string &line, u64 startPosition);
 
-    optional<IncludeEntry> FindIncludeClosingTag(const string &line, size_t startPosition);
+    optional<IncludeEntry> FindIncludeClosingTag(const string &line, u64 startPosition);
 
-    IncludeEntry FindTag(const string &line, const string& tag, size_t startPosition,
+    IncludeEntry FindTag(const string &line, const string& tag, u64 startPosition,
         HeaderFileType headerType, IncludeTagType tagType);
 
     vector<string> ReadFileByLines(const string& filePath) {
@@ -50,9 +51,9 @@ namespace CodEXpander::Core {
         vector<HeaderToken> foundTokens;
         const vector<string> fileContentByLines = ReadFileByLines(filePath);
 
-        for (size_t i = 0; i < fileContentByLines.size(); i++) {
+        for (u64 i = 0; i < fileContentByLines.size(); i++) {
             const string &currentLine = fileContentByLines[i];
-            const size_t includePosition = FindIncludeMacro(currentLine);
+            const u64 includePosition = FindIncludeMacro(currentLine);
             if (includePosition == string::npos)
                 continue;
 
@@ -106,14 +107,14 @@ namespace CodEXpander::Core {
         return std::move(headerContent);
     }
 
-    size_t FindIncludeMacro(const string &line) {
+    u64 FindIncludeMacro(const string &line) {
         const string includeMacroStatement = "#include";
-        const size_t includeMacroPosition = line.find(includeMacroStatement);
+        const u64 includeMacroPosition = line.find(includeMacroStatement);
 
         return includeMacroPosition;
     }
 
-    optional<IncludeEntry> FindIncludeStartingTag(const string &line, const size_t startPosition) {
+    optional<IncludeEntry> FindIncludeStartingTag(const string &line, const u64 startPosition) {
         const string localIncludeStartTag = "\"";
         const string externalIncludeStartTag = "<";
         IncludeEntry localStartingTag = FindTag(line, localIncludeStartTag, startPosition, HeaderFileType::Local, IncludeTagType::Start);
@@ -128,7 +129,7 @@ namespace CodEXpander::Core {
         return nullopt;
     }
 
-    optional<IncludeEntry> FindIncludeClosingTag(const string &line, const size_t startPosition) {
+    optional<IncludeEntry> FindIncludeClosingTag(const string &line, const u64 startPosition) {
         const string localIncludeClosingTag = "\"";
         const string externalIncludeClosingTag = ">";
         IncludeEntry localClosingTag = FindTag(line, localIncludeClosingTag, startPosition, HeaderFileType::Local, IncludeTagType::End);
@@ -143,10 +144,10 @@ namespace CodEXpander::Core {
         return nullopt;
     }
 
-    IncludeEntry FindTag(const string &line, const string& tag, const size_t startPosition,
+    IncludeEntry FindTag(const string &line, const string& tag, const u64 startPosition,
         const HeaderFileType headerType, const IncludeTagType tagType)
     {
-        const size_t tagPosition = line.find(tag, startPosition);
+        const u64 tagPosition = line.find(tag, startPosition);
         return IncludeEntry {
             .position = tagPosition,
             .headerType = headerType,

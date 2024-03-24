@@ -33,13 +33,13 @@ namespace CodEXpander::Tests {
         const vector<HeaderToken> includeHeaders = GetTokensFromFile(filePath);
         vector<string> fileContent = ReadFileByLines(filePath);
 
-        size_t extendedLinesOffset = 0;
+        u64 extendedLinesOffset = 0;
         ReplaceIncludeStatementWithHeaderContent(fileContent, includeHeaders[0], workingDirectory, extendedLinesOffset);
         ReplaceIncludeStatementWithHeaderContent(fileContent, includeHeaders[1], workingDirectory, extendedLinesOffset);
 
-        AssertAreEqual<size_t>(expectedFileContent.size(), fileContent.size());
+        AssertAreEqual<u64>(expectedFileContent.size(), fileContent.size());
 
-        for (size_t i = 0; i < fileContent.size(); i++) {
+        for (u64 i = 0; i < fileContent.size(); i++) {
             const auto currentLine = fileContent[i];
             AssertStringsAreEqual(expectedFileContent[i], currentLine);
         }

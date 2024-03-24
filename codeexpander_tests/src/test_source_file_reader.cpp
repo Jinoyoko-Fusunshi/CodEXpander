@@ -1,6 +1,7 @@
 #include <string>
 #include <vector>
 #include "source_file_reader.h"
+#include "declarations.h"
 #include "test_source_file_reader.h"
 #include "test_system.h"
 #include "test_system.hpp"
@@ -11,11 +12,11 @@ using namespace CodEXpander::Core;
 
 namespace CodEXpander::Tests {
     void TestSourceFileReader_ReadFileContent_NotExistingFile_EmptyContent() {
-        const size_t expectedLineCount = 0;
+        const u64 expectedLineCount = 0;
         const string filePath = "./res/missing_file.cpp";
 
         const auto fileContentLines = ReadFileByLines(filePath);
-        AssertAreEqual<size_t>(expectedLineCount, fileContentLines.size());
+        AssertAreEqual<u64>(expectedLineCount, fileContentLines.size());
     }
 
     void TestSourceFileReader_ReadFileContent_ExistingFile_ContentIsCorrect() {
@@ -27,7 +28,7 @@ namespace CodEXpander::Tests {
         };
 
         const auto fileContentLines = ReadFileByLines(filePath);
-        for (size_t i = 0; i < fileContentLines.size(); i++) {
+        for (u64 i = 0; i < fileContentLines.size(); i++) {
             const string &currentExpectedFileLine = expectedFileContent[i];
             string currentFileLine = fileContentLines[i];
             const auto lineIsEqual = currentExpectedFileLine == currentFileLine;
@@ -37,15 +38,15 @@ namespace CodEXpander::Tests {
 
     void TestSourceFileReader_ReadSourceFile_NoHeaderIncludes_FoundNoTokens() {
         const string filePath = "./res/test_file.cpp";
-        const size_t expectedHeaderTokenCount = 0;
+        const u64 expectedHeaderTokenCount = 0;
 
         vector<HeaderToken> tokens = GetTokensFromFile(filePath);
 
-        AssertAreEqual<size_t>(expectedHeaderTokenCount, tokens.size());
+        AssertAreEqual<u64>(expectedHeaderTokenCount, tokens.size());
     }
 
     void TestSourceFileReader_ReadSourceFile_HeaderIncludes_FoundLocalTokens_TokensAreCorrect() {
-        const size_t expectedHeaderTokenCount = 2;
+        const u64 expectedHeaderTokenCount = 2;
         const auto expectedHeaderType = static_cast<int>(HeaderFileType::Local);
         const string expectedHeaderOneFileName = "test_file_one.h";
         const string expectedHeaderTwoFileName = "test_file_two.h";
@@ -55,17 +56,17 @@ namespace CodEXpander::Tests {
         const string filePath = "./res/source_file_with_two_local_headers.cpp";
         vector<HeaderToken> tokens = GetTokensFromFile(filePath);
 
-        AssertAreEqual<size_t>(expectedHeaderTokenCount, tokens.size());
-        AssertAreEqual<size_t>(expectedHeaderOneLineNumber, tokens[0].lineNumber);
+        AssertAreEqual<u64>(expectedHeaderTokenCount, tokens.size());
+        AssertAreEqual<u64>(expectedHeaderOneLineNumber, tokens[0].lineNumber);
         AssertStringsAreEqual(expectedHeaderOneFileName, tokens[0].fileName);
         AssertAreEqual<int>(expectedHeaderType, static_cast<int>(tokens[0].headerType));
-        AssertAreEqual<size_t>(expectedHeaderTwoLineNumber, tokens[1].lineNumber);
+        AssertAreEqual<u64>(expectedHeaderTwoLineNumber, tokens[1].lineNumber);
         AssertStringsAreEqual(expectedHeaderTwoFileName, tokens[1].fileName);
         AssertAreEqual<int>(expectedHeaderType, static_cast<int>(tokens[1].headerType));
     }
 
     void TestSourceFileReader_ReadSourceFile_HeaderIncludes_FoundExternalTokens_TokensAreCorrect() {
-        const size_t expectedHeaderTokenCount = 2;
+        const u64 expectedHeaderTokenCount = 2;
         const auto expectedHeaderType = static_cast<int>(HeaderFileType::External);
         const string expectedHeaderOneFileName = "test_file_one.h";
         const string expectedHeaderTwoFileName = "test_file_two.h";
@@ -75,17 +76,17 @@ namespace CodEXpander::Tests {
         const string filePath = "./res/source_file_with_two_external_headers.cpp";
         vector<HeaderToken> tokens = GetTokensFromFile(filePath);
 
-        AssertAreEqual<size_t>(expectedHeaderTokenCount, tokens.size());
-        AssertAreEqual<size_t>(expectedHeaderOneLineNumber, tokens[0].lineNumber);
+        AssertAreEqual<u64>(expectedHeaderTokenCount, tokens.size());
+        AssertAreEqual<u64>(expectedHeaderOneLineNumber, tokens[0].lineNumber);
         AssertStringsAreEqual(expectedHeaderOneFileName, tokens[0].fileName);
         AssertAreEqual<int>(expectedHeaderType, static_cast<int>(tokens[0].headerType));
-        AssertAreEqual<size_t>(expectedHeaderTwoLineNumber, tokens[1].lineNumber);
+        AssertAreEqual<u64>(expectedHeaderTwoLineNumber, tokens[1].lineNumber);
         AssertStringsAreEqual(expectedHeaderTwoFileName, tokens[1].fileName);
         AssertAreEqual<int>(expectedHeaderType, static_cast<int>(tokens[1].headerType));
     }
 
     void TestSourceFileReader_ReadSourceFile_HeaderIncludes_FoundExternalAndLocalTokens_TokensAreCorrect() {
-        const size_t expectedHeaderTokenCount = 2;
+        const u64 expectedHeaderTokenCount = 2;
         const auto expectedHeaderOneType = static_cast<int>(HeaderFileType::External);
         const auto expectedHeaderTwoType = static_cast<int>(HeaderFileType::Local);
         const string expectedHeaderOneFileName = "test_file_one.h";
@@ -96,17 +97,17 @@ namespace CodEXpander::Tests {
         const string filePath = "./res/source_file_with_two_different_headers.cpp";
         vector<HeaderToken> tokens = GetTokensFromFile(filePath);
 
-        AssertAreEqual<size_t>(expectedHeaderTokenCount, tokens.size());
-        AssertAreEqual<size_t>(expectedHeaderOneLineNumber, tokens[0].lineNumber);
+        AssertAreEqual<u64>(expectedHeaderTokenCount, tokens.size());
+        AssertAreEqual<u64>(expectedHeaderOneLineNumber, tokens[0].lineNumber);
         AssertStringsAreEqual(expectedHeaderOneFileName, tokens[0].fileName);
         AssertAreEqual<int>(expectedHeaderOneType, static_cast<int>(tokens[0].headerType));
-        AssertAreEqual<size_t>(expectedHeaderTwoLineNumber, tokens[1].lineNumber);
+        AssertAreEqual<u64>(expectedHeaderTwoLineNumber, tokens[1].lineNumber);
         AssertStringsAreEqual(expectedHeaderTwoFileName, tokens[1].fileName);
         AssertAreEqual<int>(expectedHeaderTwoType, static_cast<int>(tokens[1].headerType));
     }
 
     void TestSourceFileReader_ReadHeaderFile_HeaderIncludes_FoundExternalTokens_TokensAreCorrect() {
-        const size_t expectedHeaderTokenCount = 1;
+        const u64 expectedHeaderTokenCount = 1;
         const auto expectedHeaderType = static_cast<int>(HeaderFileType::Local);
         const string expectedHeaderFileName = "test_file_one.h";
         const unsigned int expectedHeaderLineNumber = 5;
@@ -114,25 +115,25 @@ namespace CodEXpander::Tests {
         const string filePath = "./res/header_file_with_external_header.h";
         vector<HeaderToken> tokens = GetTokensFromFile(filePath);
 
-        AssertAreEqual<size_t>(expectedHeaderTokenCount, tokens.size());
-        AssertAreEqual<size_t>(expectedHeaderLineNumber, tokens[0].lineNumber);
+        AssertAreEqual<u64>(expectedHeaderTokenCount, tokens.size());
+        AssertAreEqual<u64>(expectedHeaderLineNumber, tokens[0].lineNumber);
         AssertStringsAreEqual(expectedHeaderFileName, tokens[0].fileName);
         AssertAreEqual<int>(expectedHeaderType, static_cast<int>(tokens[0].headerType));
     }
 
     void TestSourceFileReader_ReadSourceFile_HeaderFileNotExists_GetHeaderContent_EmptyResult() {
-        const size_t expectedHeaderContentSize = 0;
+        const u64 expectedHeaderContentSize = 0;
         const string filePath = "./res/source_file_with_local_not_existing_header.cpp";
         const string workingDirectory = "./res";
 
         vector<HeaderToken> tokens = GetTokensFromFile(filePath);
         const vector<string> headerContent = GetHeaderContent(tokens[0], workingDirectory);
 
-        AssertAreEqual<size_t>(expectedHeaderContentSize, headerContent.size());        
+        AssertAreEqual<u64>(expectedHeaderContentSize, headerContent.size());        
     }
 
     void TestSourceFileReader_ReadSourceFile_HeaderFileExists_GetHeaderContent_ContentIsCorrect() {
-        const size_t expectedHeaderContentSize = 5;
+        const u64 expectedHeaderContentSize = 5;
         const string filePath = "./res/source_file_with_two_local_headers.cpp";
         const string workingDirectory = "./res";
 
@@ -140,7 +141,7 @@ namespace CodEXpander::Tests {
         const vector<string> headerOneContent = GetHeaderContent(tokens[0], workingDirectory);
         const vector<string> headerTwoContent = GetHeaderContent(tokens[1], workingDirectory);
 
-        AssertAreEqual<size_t>(expectedHeaderContentSize, headerOneContent.size());
-        AssertAreEqual<size_t>(expectedHeaderContentSize, headerTwoContent.size());
+        AssertAreEqual<u64>(expectedHeaderContentSize, headerOneContent.size());
+        AssertAreEqual<u64>(expectedHeaderContentSize, headerTwoContent.size());
     }
 }

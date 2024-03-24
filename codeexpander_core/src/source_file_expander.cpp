@@ -10,19 +10,19 @@ namespace CodEXpander::Core {
     }
 
     void ReplaceIncludeStatementWithHeaderContent(vector<string> &fileContent, const HeaderToken headerInclude, 
-        const string workingDirectory, size_t &linesOffset) {
+        const string workingDirectory, u64 &linesOffset) {
         vector<string> headerContent = GetHeaderContent(headerInclude, workingDirectory);
-        size_t headerContentSize = headerContent.size();
+        u64 headerContentSize = headerContent.size();
         if (headerContentSize == 0)
             return;
 
-        size_t includeIndex = (headerInclude.lineNumber - 1) + linesOffset;
+        u64 includeIndex = (headerInclude.lineNumber - 1) + linesOffset;
         vector<string>::iterator includePosition = fileContent.begin() + includeIndex;
         fileContent.erase(includePosition);
 
-        for (size_t i = 0; i < headerContentSize; i++) {
+        for (u64 i = 0; i < headerContentSize; i++) {
             vector<string>::iterator nextLinePosition = fileContent.begin() + includeIndex + i;
-            size_t nextLineIndex = distance(fileContent.begin(), nextLinePosition);
+            u64 nextLineIndex = distance(fileContent.begin(), nextLinePosition);
             if (nextLineIndex >= fileContent.size())
                 nextLinePosition = fileContent.end();
 

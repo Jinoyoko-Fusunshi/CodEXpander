@@ -8,8 +8,7 @@ using std::vector, std::move;
 
 vector<TestMethod> GetAllTests();
 
-#define CreateNamedTestMethod(testMethodName) \
-    CreateTestMethod(#testMethodName, testMethodName)
+#define CreateNamedTestMethod(testMethodName) CreateTestMethod(#testMethodName, testMethodName)
 
 int main(int argumentCount, char* arguments[]) {
     vector<TestMethod> allTests = GetAllTests();
