@@ -10,4 +10,6 @@ namespace CodEXpander::Core {
     std::vector<HeaderToken> GetTokensFromFile(const std::string& filePath);
 
     std::vector<std::string> GetHeaderContent(const HeaderToken headerToken, const std::string workingDirectory);
+
+    bool TryWriteToFile(std::string filePath, std::vector<std::string> &expandedFileContent);
 }

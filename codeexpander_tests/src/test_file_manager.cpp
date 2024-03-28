@@ -1,12 +1,14 @@
 #include <string>
 #include <vector>
-#include "source_file_reader.h"
+#include <filesystem>
+#include "file_manager.h"
+#include "header_inlcude_expander.h"
 #include "declarations.h"
-#include "test_source_file_reader.h"
+#include "test_file_manager.h"
 #include "test_system.h"
 #include "test_system.hpp"
 
-using std::string, std::vector;
+using std::string, std::vector, std::filesystem::path, std::filesystem::exists;
 
 using namespace CodEXpander::Core;
 
@@ -143,5 +145,55 @@ namespace CodEXpander::Tests {
 
         AssertAreEqual<u64>(expectedHeaderContentSize, headerOneContent.size());
         AssertAreEqual<u64>(expectedHeaderContentSize, headerTwoContent.size());
+    }
+
+    void TestSourceFileReader_TryWriteToFile_NoFilePath_NotWritingToFile() {
+        const auto expectedResult = false;
+        const string outputFile = "./res/expanded_source_file.cpp";
+
+        vector<string> fileContent;
+        path outputFilePath(outputFile);
+        auto wroteToFile = TryWriteToFile(outputFile, fileContent);
+        auto outputPathExists = exists(outputFilePath);
+
+        AssertAreEqual<bool>(expectedResult, wroteToFile);
+        AssertAreEqual<bool>(expectedResult, outputPathExists);
+    }
+
+    void TestSourceFileReader_TryWriteToFile_NoFileContent_NotWritingToFile() {
+        const auto expectedResult = false;
+        const string outputFile = "";
+
+        vector<string> fileContent;
+        path outputFilePath(outputFile);
+        auto wroteToFile = TryWriteToFile(outputFile, fileContent);
+        auto outputPathExists = exists(outputFilePath);
+
+        AssertAreEqual<bool>(expectedResult, wroteToFile);
+        AssertAreEqual<bool>(expectedResult, outputPathExists);
+    }
+
+    void TestSourceFileReader_TryWriteToFile_ValidPathAndContent_WritesToFile() {
+        const auto expectedResult = true;
+        const string filePath = "./res/source_file_with_two_local_headers.cpp";
+        const string workingDirectory = "./res";
+        const string outputFile = "./res/expanded_source_file.cpp";
+
+        vector<HeaderToken> includeHeaders = GetTokensFromFile(filePath);
+        vector<string> fileContent = ReadFileByLines(filePath);
+        ExpandHeaderIncludes(fileContent, includeHeaders, workingDirectory);
+
+        path outputFilePath(outputFile);
+        auto wroteToFile = TryWriteToFile(outputFile, fileContent);
+        auto outputPathExists = exists(outputFilePath);
+
+        AssertAreEqual<bool>(expectedResult, wroteToFile);
+        AssertAreEqual<bool>(expectedResult, outputPathExists);
+
+        vector<string> outputFileContent = ReadFileByLines(outputFile);
+        AssertAreEqual<u64>(fileContent.size(), outputFileContent.size());
+
+        for (u64 i = 0; i < outputFileContent.size(); i++)
+            AssertStringsAreEqual(fileContent[i], outputFileContent[i]);
     }
 }

@@ -1,16 +1,26 @@
 #include <iterator>
-#include "source_file_expander.h"
-#include "source_file_reader.h"
+#include <fstream>
+#include "file_manager.h"
+#include "header_inlcude_expander.h"
 
-using std::vector, std::string, std::distance;
+using std::vector, std::string, std::distance, std::ofstream, std::endl;
 
 namespace CodEXpander::Core {
-    vector<string> GetCopyOfExpandedSourceFileContent(vector<string> fileContent, vector<HeaderToken> foundHeaderIncludes) {
-        return vector<string>();
+    vector<string> GetCopyOfExpandedSourceFileContent(vector<string> fileContent, vector<HeaderToken> foundHeaderIncludes, const string workingDirectory) {
+        vector<string> replacedFileContent(fileContent);
+        ExpandHeaderIncludes(replacedFileContent, std::move(foundHeaderIncludes), workingDirectory);
+
+        return std::move(replacedFileContent);
     }
 
-    void ReplaceIncludeStatementWithHeaderContent(vector<string> &fileContent, const HeaderToken headerInclude, 
-        const string workingDirectory, u64 &linesOffset) {
+    void ExpandHeaderIncludes(vector<string> &fileContent, vector<HeaderToken> headerIncludes, const string &workingDirectory) {
+        u64 lineOffset = 0;
+
+        for (auto headerInclude : headerIncludes)
+            ExpandHeaderInclude(fileContent, headerInclude, workingDirectory, lineOffset);
+    }
+
+    void ExpandHeaderInclude(std::vector<std::string> &fileContent, HeaderToken headerInclude, const string &workingDirectory, u64 &linesOffset)  {
         vector<string> headerContent = GetHeaderContent(headerInclude, workingDirectory);
         u64 headerContentSize = headerContent.size();
         if (headerContentSize == 0)
@@ -31,9 +41,5 @@ namespace CodEXpander::Core {
         }
 
         linesOffset += headerContentSize;
-    }
-
-    void WriteExpandedSourceFileInTempFile(string filePath, string expandedFileContent) {
-        
     }
 }

@@ -1,7 +1,7 @@
 #include <vector>
 #include "test_system.h"
-#include "test_source_file_reader.h"
-#include "test_source_file_expander.h"
+#include "test_file_manager.h"
+#include "test_header_include_expander.h"
 
 using namespace CodEXpander::Tests;
 using std::vector, std::move;
@@ -29,8 +29,11 @@ vector<TestMethod> GetAllTests() {
         CreateNamedTestMethod(TestSourceFileReader_ReadSourceFile_HeaderFileNotExists_GetHeaderContent_EmptyResult),
         CreateNamedTestMethod(TestSourceFileReader_ReadSourceFile_HeaderFileExists_GetHeaderContent_ContentIsCorrect),
 
-        CreateNamedTestMethod(TestSourceFileExpander_ReplaceIncludeStatemens_NoInlcudes_FileContentIsEqual),
-        CreateNamedTestMethod(TestSourceFileExpander_ReplaceIncludeStatemens_OneInlcude_NewFileContentIsCorrect),
+        CreateNamedTestMethod(TestSourceFileExpander_ExpandHeaderIncludes_NoInlcudes_FileContentIsEqual),
+        CreateNamedTestMethod(TestSourceFileExpander_ExpandHeaderIncludes_OneInlcude_NewFileContentIsCorrect),
+        CreateNamedTestMethod(TestSourceFileReader_TryWriteToFile_NoFilePath_NotWritingToFile),
+        CreateNamedTestMethod(TestSourceFileReader_TryWriteToFile_NoFileContent_NotWritingToFile),
+        CreateNamedTestMethod(TestSourceFileReader_TryWriteToFile_ValidPathAndContent_WritesToFile)
     };
 
     return std::move(tests);

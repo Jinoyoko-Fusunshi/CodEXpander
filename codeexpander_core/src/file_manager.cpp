@@ -2,10 +2,11 @@
 #include <iostream>
 #include <filesystem>
 #include <optional>
-#include "source_file_reader.h"
+#include "file_manager.h"
 #include "declarations.h"
 
-using std::optional, std::string, std::nullopt, std::vector, std::ifstream, std::filesystem::path, std::filesystem::exists;
+using std::optional, std::string, std::nullopt, std::vector, std::ifstream, std::filesystem::path, 
+    std::filesystem::exists, std::ofstream, std::endl;
 
 namespace CodEXpander::Core {
     enum class IncludeTagType {
@@ -105,6 +106,18 @@ namespace CodEXpander::Core {
 
         headerContent = fileContent; 
         return std::move(headerContent);
+    }
+
+    bool TryWriteToFile(string filePath, vector<string> &expandedFileContent) {
+        ofstream fileStream(filePath);
+        if (!fileStream.is_open())
+            return false;
+
+        for (auto currentLine : expandedFileContent)
+            fileStream << currentLine << endl;
+
+        fileStream.close();
+        return true;
     }
 
     u64 FindIncludeMacro(const string &line) {
