@@ -109,6 +109,9 @@ namespace CodEXpander::Core {
     }
 
     bool TryWriteToFile(string filePath, vector<string> &expandedFileContent) {
+        if (expandedFileContent.size() == 0)
+            return false;
+        
         ofstream fileStream(filePath);
         if (!fileStream.is_open())
             return false;
@@ -157,9 +160,7 @@ namespace CodEXpander::Core {
         return nullopt;
     }
 
-    IncludeEntry FindTag(const string &line, const string& tag, const u64 startPosition,
-        const HeaderFileType headerType, const IncludeTagType tagType)
-    {
+    IncludeEntry FindTag(const string &line, const string& tag, const u64 startPosition, const HeaderFileType headerType, const IncludeTagType tagType) {
         const u64 tagPosition = line.find(tag, startPosition);
         return IncludeEntry {
             .position = tagPosition,

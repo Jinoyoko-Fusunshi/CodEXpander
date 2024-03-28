@@ -1,6 +1,6 @@
 # MakeFiles variables
 SHELL = /bin/bash
-CC = g++
+CC = gcc
 
 
 # core project properties
