@@ -3,19 +3,35 @@
     "configurations": [
         {
             "type": "cppdbg",
-            "cwd": "${workspaceRoot}/codeexpander_tests/bin",
-            "program": "${workspaceRoot}/codeexpander_tests/bin/codeexpander_tests",
+            "cwd": "${workspaceRoot}/codexpander_tests/bin",
+            "program": "${workspaceRoot}/codexpander_tests/bin/codexpander_tests",
             "request": "launch",
-            "name": "Codeexpander Tests Debug",
-            "preLaunchTask": "Build CodeExpander Tests Debug"
+            "name": "CodExpander Tests Debug",
+            "preLaunchTask": "Build CodExpander Tests Debug"
         },
         {
             "type": "cppdbg",
-            "cwd": "${workspaceRoot}/codeexpander_tests/bin",
-            "program": "${workspaceRoot}/codeexpander_tests/bin/codeexpander_tests",
+            "cwd": "${workspaceRoot}/codexpander_tests/bin",
+            "program": "${workspaceRoot}/codexpander_tests/bin/codexpander_tests",
             "request": "launch",
-            "name": "Codeexpander Tests Release",
-            "preLaunchTask": "Build CodeExpander Tests Release"
+            "name": "CodExpander Tests Release",
+            "preLaunchTask": "Build CodExpander Tests Release"
+        },
+        {
+            "type": "cppdbg",
+            "cwd": "${workspaceRoot}/codexpander/bin",
+            "program": "${workspaceRoot}/codexpander/bin/codexpander",
+            "request": "launch",
+            "name": "CodExpander Debug",
+            "preLaunchTask": "Build CodExpander Debug"
+        },
+        {
+            "type": "cppdbg",
+            "cwd": "${workspaceRoot}/codexpander/bin",
+            "program": "${workspaceRoot}/codexpander/bin/codexpander",
+            "request": "launch",
+            "name": "CodExpander Release",
+            "preLaunchTask": "Build CodExpander Release"
         }
     ]
 }

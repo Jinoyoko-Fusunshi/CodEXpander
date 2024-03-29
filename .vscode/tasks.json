@@ -2,7 +2,7 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Build CodeExpander Tests Debug",
+            "label": "Build CodExpander Tests Debug",
             "command": "make",
             "args": [
                 "all_tests"
@@ -13,10 +13,32 @@
             ]
         },
         {
-            "label": "Build CodeExpander Tests Release",
+            "label": "Build CodExpander Tests Release",
             "command": "make",
             "args": [
                 "all_tests_release"
+            ],
+            "type": "shell",
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "Build CodExpander Debug",
+            "command": "make",
+            "args": [
+                "all_codexpander"
+            ],
+            "type": "shell",
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "Build CodExpander Release",
+            "command": "make",
+            "args": [
+                "all_codexpander_release"
             ],
             "type": "shell",
             "problemMatcher": [

@@ -4,7 +4,9 @@
         {
             "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/**/include"
+                "${workspaceFolder}/codexpander/include",
+                "${workspaceFolder}/codexpander_core/include",
+                "${workspaceFolder}/codexpander_tests/include"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/clang",
