@@ -1,11 +1,15 @@
+#include <chrono>
 #include "logging.h"
 #include "color_builder.h"
 #include "test_system.h"
 #include "assertion_exception.h"
 
+using std::string, std::vector, std::to_string, std::chrono::steady_clock, std::chrono::duration;
 using namespace CodEXpander::Core;
 
 namespace CodEXpander::Tests {
+    string GetElapsedTimeInSeconds(steady_clock::time_point start, steady_clock::time_point end);
+
     TestMethod CreateTestMethod(const string name, void (*callback)()) {
         TestMethod testmethod = {
             .testName = std::move(name),
@@ -24,6 +28,7 @@ namespace CodEXpander::Tests {
         PrintLineInfoMessage(outputLogs, to_string(tests.size()));
         PrintLineMessage(outputLogs, "========================================================", Color().White());
 
+        const auto testsStartTime = steady_clock::now();
         for (const auto& test : tests) {
             PrintMessage(outputLogs, string(">> "), Color().White());
             PrintMessage(outputLogs, test.testName, Color().Cyan());
@@ -31,6 +36,7 @@ namespace CodEXpander::Tests {
 
             string resultMessage;
             Color color;
+            const auto testStartTime = steady_clock::now();
             try {
                 test.callback();
                 resultMessage = "\tPASSED";
@@ -41,10 +47,14 @@ namespace CodEXpander::Tests {
                 color = Color().Red();
                 failedTests.emplace_back(std::move(test));
             }
+            const auto testEndTime = steady_clock::now();
+            const auto elapsedSecondsMessage = GetElapsedTimeInSeconds(testStartTime, testEndTime);
 
             PrintMessage(outputLogs, resultMessage, color);
-            PrintLineInfoMessage(outputLogs, " ");
+            PrintMessage(outputLogs, ": " + elapsedSecondsMessage + "\n\n", Color().White());
         }
+        const auto testsEndTime = steady_clock::now();
+        const auto elapsedSecondsMessage = GetElapsedTimeInSeconds(testsStartTime, testsEndTime);
 
         PrintLineInfoMessage(outputLogs, "");
         PrintMessage(outputLogs, "Finished running tests: ", Color().Green());
