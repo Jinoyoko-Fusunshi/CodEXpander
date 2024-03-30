@@ -1,8 +1,9 @@
-#include <iostream>
+#include "logging.h"
+#include "color_builder.h"
 #include "test_system.h"
 #include "assertion_exception.h"
 
-using std::string, std::vector, std::cout, std::to_string;
+using namespace CodEXpander::Core;
 
 namespace CodEXpander::Tests {
     TestMethod CreateTestMethod(const string name, void (*callback)()) {
@@ -19,45 +20,46 @@ namespace CodEXpander::Tests {
         vector<TestMethod> passedTests; 
         vector<string> outputLogs;
 
-        PrintMessage(outputLogs, "Running tests: ", "\033[1;37m");
+        PrintMessage(outputLogs, "Running tests: ", Color().Green());
         PrintLineInfoMessage(outputLogs, to_string(tests.size()));
-        PrintLineMessage(outputLogs, "========================================================", "\033[1;37m");
+        PrintLineMessage(outputLogs, "========================================================", Color().White());
 
         for (const auto& test : tests) {
-            PrintMessage(outputLogs, string(">> "), "\033[1;37m");
-            PrintMessage(outputLogs, test.testName, "\033[0;36m");
-            PrintLineMessage(outputLogs, string(":"), "\033[1;37m");
+            PrintMessage(outputLogs, string(">> "), Color().White());
+            PrintMessage(outputLogs, test.testName, Color().Cyan());
+            PrintLineMessage(outputLogs, string(":"), Color().White());
 
             string resultMessage;
-            string colorCode;
+            Color color;
             try {
                 test.callback();
                 resultMessage = "\tPASSED";
-                colorCode = "\033[0;32m";
+                color = Color().Green();
                 passedTests.emplace_back(std::move(test));
             } catch (AssertionException ex) {
                 resultMessage = string("\tFAILED:") + string("\n\t\t") + ex.GetMessage();
-                colorCode = "\033[0;31m";
+                color = Color().Red();
                 failedTests.emplace_back(std::move(test));
             }
 
-            PrintLineMessage(outputLogs, resultMessage, colorCode);
+            PrintMessage(outputLogs, resultMessage, color);
             PrintLineInfoMessage(outputLogs, " ");
         }
 
         PrintLineInfoMessage(outputLogs, "");
-        PrintMessage(outputLogs, "Finished running tests:\n", "\033[0;32m");
-        PrintMessage(outputLogs, "========================================================\n", "\033[1;37m");
-        PrintMessage(outputLogs, "Passed Tests: ", "\033[0;32m");
+        PrintMessage(outputLogs, "Finished running tests: ", Color().Green());
+        PrintMessage(outputLogs, elapsedSecondsMessage, Color().Cyan());
+        PrintMessage(outputLogs, "\n========================================================\n", Color().White());
+        PrintMessage(outputLogs, "Passed Tests: ", Color().Green());
         PrintInfoMessage(outputLogs, to_string(passedTests.size()));
-        PrintMessage(outputLogs, " of ", "\033[1;37m");
+        PrintMessage(outputLogs, " of ", Color().White());
         PrintInfoMessage(outputLogs, to_string(tests.size()));
 
-        PrintMessage(outputLogs, "\n\nFailed Tests: ", "\033[0;31m");
+        PrintMessage(outputLogs, "\n\nFailed Tests: ", Color().Red());
         PrintInfoMessage(outputLogs, to_string(failedTests.size()));
-        PrintMessage(outputLogs, " of ", "\033[1;37m");
+        PrintMessage(outputLogs, " of ", Color().White());
         PrintInfoMessage(outputLogs, to_string(tests.size()));
-        PrintLineMessage(outputLogs, "", "\033[0m");
+        PrintLineMessage(outputLogs, "", Color().White());
     }
 
     void AssertStringsAreEqual(const std::string &expectedValue, const std::string &actualValue) {
