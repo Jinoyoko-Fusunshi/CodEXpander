@@ -14,22 +14,4 @@ namespace CodEXpander::Tests {
     void RunTests(std::vector<TestMethod> tests);
 
     void AssertStringsAreEqual(const std::string &expectedValue, const std::string &actualValue);
-
-    void PrintLineInfoMessage(std::vector<std::string> messageTraceLogs, std::string message);
-
-    void PrintInfoMessage(std::vector<std::string> messageTraceLogs, std::string message);
-
-    void PrintLineErrorMessage(std::vector<std::string> messageTraceLogs, std::string message);
-
-    void PrintErrorMessage(std::vector<std::string> messageTraceLogs, std::string message);
-
-    void PrintLineWarningMessage(std::vector<std::string> messageTraceLogs, std::string message);
-
-    void PrintLineWarningMessage(std::vector<std::string> messageTraceLogs, std::string message);
-
-    void PrintWarningMessage(std::vector<std::string> messageTraceLogs, std::string message);
-
-    void PrintLineMessage(std::vector<std::string> messageTraceLogs, std::string message, std::string colorEscapeCode);
-
-    void PrintMessage(std::vector<std::string> messageTraceLogs, std::string message, std::string colorEscapeCode);
 }

@@ -70,37 +70,9 @@ namespace CodEXpander::Tests {
         }
     }
 
-    void PrintLineInfoMessage(vector<string> messageTraceLogs, string message) {
-        PrintLineMessage(messageTraceLogs, message, "\033[0;36m");
-    }
-
-    void PrintInfoMessage(vector<string> messageTraceLogs, string message) {
-        PrintMessage(messageTraceLogs, message, "\033[0;36m");
-    }
-
-    void PrintLineErrorMessage(vector<string> messageTraceLogs, string message) {
-        PrintLineMessage(messageTraceLogs, message, "\033[0;31m");
-    }
-
-    void PrintErrorMessage(vector<string> messageTraceLogs, string message) {
-        PrintMessage(messageTraceLogs, message, "\033[0;31m");
-    }
-
-    void PrintLineWarningMessage(vector<string> messageTraceLogs, string message) {
-        PrintLineMessage(messageTraceLogs, message, "\033[1;33m");
-    }
-
-    void PrintWarningMessage(vector<string> messageTraceLogs, string message) {
-        PrintMessage(messageTraceLogs, message, "\033[1;33m");
-    }
-
-    void PrintLineMessage(vector<string> messageTraceLogs, string message, string colorEscapeCode) {
-        string newLineMessage = message + "\n";
-        PrintMessage(messageTraceLogs, newLineMessage, colorEscapeCode);
-    }
-
-    void PrintMessage(vector<string> messageTraceLogs, string message, string colorEscapeCode) {
-        messageTraceLogs.emplace_back(message);
-        cout << colorEscapeCode << message;
+    string GetElapsedTimeInSeconds(steady_clock::time_point start, steady_clock::time_point end) {
+        const auto elapsedSeconds = duration<double>(end - start);
+        const auto elapsedSecondsMessage = to_string(elapsedSeconds.count()) + "s";
+        return std::move(elapsedSecondsMessage);
     }
 }
