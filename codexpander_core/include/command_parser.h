@@ -9,7 +9,7 @@ namespace CodEXpander::Core {
         std::string value;
     };
 
-    std::vector<Argument> ParseArguments(int argument_count, std::string arguments[]);
+    std::vector<Argument> ParseArguments(int argument_count, std::vector<std::string> arguments);
 
     bool TryGetArgument(std::string argumentString, Argument &argument);
 }

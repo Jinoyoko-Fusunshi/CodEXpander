@@ -4,7 +4,7 @@
 using std::vector, std::string;
 
 namespace CodEXpander::Core {
-    vector<Argument> ParseArguments(int argument_count, string arguments[]) {
+    vector<Argument> ParseArguments(int argument_count, vector<string> arguments) {
         vector<Argument> parsedArguments;
         for (auto i = 0; i < argument_count; i++) {
             const string parameter(arguments[i]);

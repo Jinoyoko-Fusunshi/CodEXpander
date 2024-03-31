@@ -51,7 +51,7 @@ namespace CodEXpander::Tests {
             const auto elapsedSecondsMessage = GetElapsedTimeInSeconds(testStartTime, testEndTime);
 
             PrintMessage(outputLogs, resultMessage, color);
-            PrintMessage(outputLogs, ": " + elapsedSecondsMessage + "\n\n", Color().White());
+            PrintMessage(outputLogs, ": \n\t\t" + elapsedSecondsMessage + "\n\n", Color().White());
         }
         const auto testsEndTime = steady_clock::now();
         const auto elapsedSecondsMessage = GetElapsedTimeInSeconds(testsStartTime, testsEndTime);

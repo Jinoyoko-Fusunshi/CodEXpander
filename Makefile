@@ -109,4 +109,4 @@ build_codexpander: $(codexpander_object_files)
 	$(CC) $(codexpander_object_files) -I$(core_include_dir) -L$(core_bin_dir) -l$(core_library_files) -o $(codexpander_bin_dir)/codexpander
 
 $(codexpander_object_files): $(codexpander_object_dir)/%.o: $(codexpander_source_dir)/%.cpp
-	$(CC) -I$(core_include_dir) -L$(core_bin_dir) -l$(core_library_files) -c $< -o $@
+	$(CC) -I$(core_include_dir) -c $< -o $@
