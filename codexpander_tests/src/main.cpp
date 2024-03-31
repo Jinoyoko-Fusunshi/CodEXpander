@@ -2,6 +2,7 @@
 #include "test_system.h"
 #include "test_file_manager.h"
 #include "test_header_include_expander.h"
+#include "test_command_parser.h"
 
 using namespace CodEXpander::Tests;
 using std::vector;
@@ -33,7 +34,12 @@ vector<TestMethod> GetAllTests() {
         CreateNamedTestMethod(TestSourceFileExpander_ExpandHeaderIncludes_OneInlcude_NewFileContentIsCorrect),
         CreateNamedTestMethod(TestSourceFileReader_TryWriteToFile_NoFilePath_NotWritingToFile),
         CreateNamedTestMethod(TestSourceFileReader_TryWriteToFile_NoFileContent_NotWritingToFile),
-        CreateNamedTestMethod(TestSourceFileReader_TryWriteToFile_ValidPathAndContent_WritesToFile)
+        CreateNamedTestMethod(TestSourceFileReader_TryWriteToFile_ValidPathAndContent_WritesToFile),
+
+        CreateNamedTestMethod(TestCommandParser_ParseArguments_StringIsEmpty_NoArguments),
+        CreateNamedTestMethod(TestCommandParser_ParseArguments_ArgumentWithOnePrexifSymbol_ReturnsNoArguments),
+        CreateNamedTestMethod(TestCommandParser_ParseArguments_ArgumentWithBothPrefixSymbol_ReturnsOneArgument),
+        CreateNamedTestMethod(TestCommandParser_ParseArguments_TwoArgumentsPresent_ReturnsTwoArguments)
     };
 
     return std::move(tests);
