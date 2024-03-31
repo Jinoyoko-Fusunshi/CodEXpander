@@ -73,8 +73,7 @@ namespace CodEXpander::Tests {
     }
 
     void AssertStringsAreEqual(const std::string &expectedValue, const std::string &actualValue) {
-        auto valueMatches = expectedValue == actualValue;
-        if (!valueMatches) {
+        if (expectedValue != actualValue) {
             std::string message = std::string("Assertion failed:") + std::string("\n\t\t\texpected value: ")
                 + expectedValue + std::string("\n\t\t\tactual value: \t") + actualValue;
 

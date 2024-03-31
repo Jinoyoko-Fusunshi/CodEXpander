@@ -1,6 +1,6 @@
 # global variables
 SHELL = /bin/bash
-CC = g++
+CC = clang++
 
 
 # global targets
@@ -22,9 +22,9 @@ core_library_files = codepander_core
 
 
 # codexpander core targets
-all_core: clean_core build_core
+all_core: clean_core debug_build build_core
 
-all_core_release: clean_core build_core_release
+all_core_release: clean_core build_core
 
 clean_core:
 	rm -rf $(core_object_dir)
@@ -32,10 +32,7 @@ clean_core:
 	mkdir -p $(core_object_dir)
 	mkdir -p $(core_bin_dir)
 
-build_core: debug_build $(core_object_files)
-	ar rcs $(core_bin_dir)/libcodepander_core.a $(core_object_files)
-
-build_core_release: $(core_object_files)
+build_core: $(core_object_files)
 	ar rcs $(core_bin_dir)/libcodepander_core.a $(core_object_files)
 
 $(core_object_files): $(core_object_dir)/%.o: $(core_source_dir)/%.cpp
@@ -58,12 +55,12 @@ test_object_files = $(patsubst $(test_source_dir)/%.cpp, $(test_object_dir)/%.o,
 run_tests: all_tests
 	$(test_bin_dir)/codexpander_tests
 
-all_tests: all_core clean_tests build_tests copy_resources_tests
+all_tests: all_core clean_tests debug_build build_tests copy_resources_tests
 
 run_tests_release: all_tests_release
 	$(test_bin_dir)/codexpander_tests
 
-all_tests_release: all_core_release clean_tests build_tests_release copy_resources_tests
+all_tests_release: all_core_release clean_tests build_tests copy_resources_tests
 
 clean_tests:
 	rm -rf $(test_object_dir)
@@ -71,14 +68,11 @@ clean_tests:
 	mkdir -p $(test_object_dir)
 	mkdir -p $(test_bin_dir)
 
-build_tests: debug_build $(test_object_files)
-	$(CC) $(test_object_files) -I$(test_include_dir) -I$(core_include_dir) -L$(core_bin_dir) -l$(core_library_files) -o $(test_bin_dir)/codexpander_tests
-
-build_tests_release: $(test_object_files)
+build_tests: $(test_object_files)
 	$(CC) $(test_object_files) -I$(test_include_dir) -I$(core_include_dir) -L$(core_bin_dir) -l$(core_library_files) -o $(test_bin_dir)/codexpander_tests
 
 $(test_object_files): $(test_object_dir)/%.o: $(test_source_dir)/%.cpp
-	$(CC) -I$(test_include_dir) -I$(core_include_dir) -L$(core_bin_dir) -l$(core_library_files) -c $< -o $@
+	$(CC) -I$(test_include_dir) -I$(core_include_dir) -c $< -o $@
 
 copy_resources_tests:
 	mkdir -p $(test_bin_res_dir)
@@ -98,12 +92,12 @@ codexpander_object_files = $(patsubst $(codexpander_source_dir)/%.cpp, $(codexpa
 run_codexpander: all_codexpander
 	$(codexpander_bin_dir)/codexpander
 
-all_codexpander: all_core clean_codexpander build_codexpander
+all_codexpander: all_core clean_codexpander debug_build build_codexpander
 
 run_codexpander_release: all_codexpander_release
 	$(codexpander_bin_dir)/codexpander
 
-all_codexpander_release: all_core_release clean_codexpander build_codexpander_release
+all_codexpander_release: all_core_release clean_codexpander build_codexpander
 
 clean_codexpander:
 	rm -rf $(codexpander_object_dir)
@@ -111,10 +105,7 @@ clean_codexpander:
 	mkdir -p $(codexpander_object_dir)
 	mkdir -p $(codexpander_bin_dir)
 
-build_codexpander: debug_build $(codexpander_object_files)
-	$(CC) $(codexpander_object_files) -I$(core_include_dir) -L$(core_bin_dir) -l$(core_library_files) -o $(codexpander_bin_dir)/codexpander
-
-build_codexpander_release: $(codexpander_object_files)
+build_codexpander: $(codexpander_object_files)
 	$(CC) $(codexpander_object_files) -I$(core_include_dir) -L$(core_bin_dir) -l$(core_library_files) -o $(codexpander_bin_dir)/codexpander
 
 $(codexpander_object_files): $(codexpander_object_dir)/%.o: $(codexpander_source_dir)/%.cpp

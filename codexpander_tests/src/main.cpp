@@ -4,7 +4,7 @@
 #include "test_header_include_expander.h"
 
 using namespace CodEXpander::Tests;
-using std::vector, std::move;
+using std::vector;
 
 vector<TestMethod> GetAllTests();
 
@@ -12,7 +12,7 @@ vector<TestMethod> GetAllTests();
 
 int main(int argumentCount, char* arguments[]) {
     vector<TestMethod> allTests = GetAllTests();
-    RunTests(move(allTests));
+    RunTests(std::move(allTests));
 
     return 0;
 }

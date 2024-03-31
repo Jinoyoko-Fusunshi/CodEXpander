@@ -16,5 +16,5 @@ namespace CodEXpander::Core {
     typedef char c8;
     typedef wchar_t c16;
 
-    constexpr i8 MaxStringSize = 255;
+    constexpr u8 MaxStringSize = static_cast<u8>(255);
 }
