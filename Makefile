@@ -1,11 +1,11 @@
 # global variables
 SHELL = /bin/bash
-CC = clang++
+CC = clang++ -std=c++20
 
 
 # global targets
 debug_build:
-	$(eval CC=g++ -g)
+	$(eval CC=clang++ -std=c++20 -g)
 
 all: all_core_release all_codexpander_release
 

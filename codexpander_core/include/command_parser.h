@@ -10,6 +10,6 @@ namespace CodEXpander::Core {
     };
 
     std::vector<Argument> ParseArguments(int argument_count, std::vector<std::string> arguments);
-
     bool TryGetArgument(std::string argumentString, Argument &argument);
+    bool TryGetExistingArgument(const std::vector<Argument> &arguments, std::string name, Argument &foundArgument);
 }

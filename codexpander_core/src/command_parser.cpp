@@ -1,7 +1,9 @@
+#include <algorithm>
+#include <ranges>
 #include "command_parser.h"
 #include "declarations.h"
 
-using std::vector, std::string;
+using std::vector, std::string, std::find, std::views::filter, std::distance;
 
 namespace CodEXpander::Core {
     vector<Argument> ParseArguments(int argument_count, vector<string> arguments) {
@@ -49,6 +51,25 @@ namespace CodEXpander::Core {
         argument.name = std::move(argumentName);
         argument.value = std::move(argumentValue);
 
+        return true;
+    }
+
+    bool TryGetExistingArgument(const vector<Argument> &arguments, string name, Argument &foundArgument) {
+        auto findElementByName = [name](const Argument &arg) {
+            return arg.name.compare(name) == 0;
+        };
+
+        auto filteredArguments = arguments | filter(findElementByName);
+        auto size = distance(filteredArguments.begin(), filteredArguments.end());
+        if (size == 0)
+            return false;
+
+        vector<Argument> foundArguments(filteredArguments.begin(), filteredArguments.end());
+        Argument argument = foundArguments[0];
+        if (argument.value.compare("") == 0)
+            return false;
+        
+        foundArgument = argument;
         return true;
     }
 }

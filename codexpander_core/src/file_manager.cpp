@@ -75,14 +75,14 @@ namespace CodEXpander::Core {
             const auto headerFileName = currentLine.substr(startingTag.position + 1, headerFileNameLength);
 
             HeaderToken token = {
-                .fileName = headerFileName,
+                .fileName = std::move(headerFileName),
                 .lineNumber = static_cast<unsigned int>(i) + 1,
                 .headerType = closingTag.headerType
             };
             foundTokens.emplace_back(token);
         }
 
-        return foundTokens;
+        return std::move(foundTokens);
     }
 
     vector<string> GetHeaderContent(const HeaderToken headerToken, const string workingDirectory) {

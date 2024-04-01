@@ -21,6 +21,7 @@
             "type": "cppdbg",
             "cwd": "${workspaceRoot}/codexpander/bin",
             "program": "${workspaceRoot}/codexpander/bin/codexpander",
+            "args": ["--source_file=../src/main.cpp", "--working_dir=../../codexpander_core"],
             "request": "launch",
             "name": "CodExpander Debug",
             "preLaunchTask": "Build CodExpander Debug"
@@ -29,6 +30,7 @@
             "type": "cppdbg",
             "cwd": "${workspaceRoot}/codexpander/bin",
             "program": "${workspaceRoot}/codexpander/bin/codexpander",
+            "args": ["--source_file=../src/main.cpp", "--working_dir=../../codexpander_core"],
             "request": "launch",
             "name": "CodExpander Release",
             "preLaunchTask": "Build CodExpander Release"
