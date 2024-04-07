@@ -2,38 +2,79 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "type": "cppdbg",
-            "cwd": "${workspaceRoot}/codexpander_tests/bin",
-            "program": "${workspaceRoot}/codexpander_tests/bin/codexpander_tests",
-            "request": "launch",
             "name": "CodExpander Tests Debug",
-            "preLaunchTask": "Build CodExpander Tests Debug"
-        },
-        {
             "type": "cppdbg",
             "cwd": "${workspaceRoot}/codexpander_tests/bin",
             "program": "${workspaceRoot}/codexpander_tests/bin/codexpander_tests",
             "request": "launch",
+            "preLaunchTask": "Build CodExpander Tests Debug",
+            "launchCompleteCommand": "exec-run",
+            "MIMode": "gdb",
+            "miDebuggerPath": "/usr/bin/gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        },
+        {
             "name": "CodExpander Tests Release",
-            "preLaunchTask": "Build CodExpander Tests Release"
+            "type": "cppdbg",
+            "cwd": "${workspaceRoot}/codexpander_tests/bin",
+            "program": "${workspaceRoot}/codexpander_tests/bin/codexpander_tests",
+            "request": "launch",
+            "preLaunchTask": "Build CodExpander Tests Release",
+            "launchCompleteCommand": "exec-run",
+            "MIMode": "gdb",
+            "miDebuggerPath": "/usr/bin/gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
         },
         {
-            "type": "cppdbg",
-            "cwd": "${workspaceRoot}/codexpander/bin",
-            "program": "${workspaceRoot}/codexpander/bin/codexpander",
-            "args": ["--source_file=../src/main.cpp", "--working_dir=../../codexpander_core"],
-            "request": "launch",
             "name": "CodExpander Debug",
-            "preLaunchTask": "Build CodExpander Debug"
-        },
-        {
             "type": "cppdbg",
             "cwd": "${workspaceRoot}/codexpander/bin",
             "program": "${workspaceRoot}/codexpander/bin/codexpander",
-            "args": ["--source_file=../src/main.cpp", "--working_dir=../../codexpander_core"],
+            "args": ["--source_file=../src/main.cpp", "--working_dir=../../codexpander_core/"],
             "request": "launch",
+            "preLaunchTask": "Build CodExpander Debug",
+            "launchCompleteCommand": "exec-run",
+            "MIMode": "gdb",
+            "miDebuggerPath": "/usr/bin/gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+
+        },
+        {
             "name": "CodExpander Release",
-            "preLaunchTask": "Build CodExpander Release"
+            "type": "cppdbg",
+            "cwd": "${workspaceRoot}/codexpander/bin",
+            "program": "${workspaceRoot}/codexpander/bin/codexpander",
+            "args": ["--source_file=../src/main.cpp", "--working_dir=../../codexpander_core/"],
+            "request": "launch",
+            "preLaunchTask": "Build CodExpander Release",
+            "launchCompleteCommand": "exec-run",
+            "MIMode": "gdb",
+            "miDebuggerPath": "/usr/bin/gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
         }
     ]
 }
