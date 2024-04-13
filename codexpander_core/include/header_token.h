@@ -1,5 +1,7 @@
 #pragma once
 
+#include "declarations.h"
+
 namespace CodEXpander::Core {
     enum class HeaderFileType {
         System,
@@ -9,7 +11,7 @@ namespace CodEXpander::Core {
 
     struct HeaderToken {
         std::string fileName;
-        unsigned int lineNumber;
+        u64 lineNumber;
         HeaderFileType headerType;
     };
 }

@@ -5,9 +5,10 @@
 #include "command_parser.h"
 #include "file_manager.h"
 #include "header_inlcude_expander.h"
+#include "header_dependy_finder.h"
 
 using namespace CodEXpander::Core;
-using std::string, std::vector, std::filesystem::path;
+using std::string, std::vector, std::filesystem::path, std::pair;
 
 void WriteExpandedContentToFile(string sourceFile, string outputFile, string workingDirectory);
 
@@ -22,7 +23,7 @@ int main(int argument_count, c8 *raw_arguments[]) {
     if (Argument source_argument; TryGetExistingArgument(parsedArguments, "source_file", source_argument)) {
         string workingDirectory = "./";
         string sourceFile = source_argument.value;
-        string outputFile = "./temp_extended_filename";
+        string outputFile = "./temp_extended_filename.cpp";
         
         if (Argument argument; TryGetExistingArgument(parsedArguments, "output_file", argument))
             outputFile = argument.value;
@@ -37,10 +38,8 @@ int main(int argument_count, c8 *raw_arguments[]) {
 }
 
 void WriteExpandedContentToFile(string sourceFile, string outputFile, string workingDirectory) {
-    vector<HeaderToken> includeHeaders = GetTokensFromFile(sourceFile);
-    vector<string> fileContent = ReadFileByLines(sourceFile);
-    ExpandHeaderIncludes(fileContent, includeHeaders, workingDirectory);
-
-    path outputFilePath(outputFile);
-    auto wroteToFile = TryWriteToFile(outputFile, fileContent);
+    HeaderDependencyGraph dependencyGraph(sourceFile, workingDirectory);
+    auto countedHeaderFiles = dependencyGraph.GetHeaderFilesSortedByOccurences();
+    auto expandedSourceFileContent = ExpandHeaderIncludes(sourceFile, countedHeaderFiles, workingDirectory);
+    auto wroteToFile = TryWriteToFile(outputFile, expandedSourceFileContent);
 }

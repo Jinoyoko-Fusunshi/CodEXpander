@@ -14,7 +14,7 @@ using std::string, std::vector, std::filesystem::path, std::filesystem::exists;
 using namespace CodEXpander::Core;
 
 namespace CodEXpander::Tests {
-    void TestSourceFileReader_ReadFileContent_NotExistingFile_EmptyContent() {
+    void TestFileManager_ReadFilesByLines_NotExistingFile_EmptyContent() {
         const u64 expectedLineCount = 0;
         const string filePath = "./res/missing_file.cpp";
 
@@ -22,7 +22,7 @@ namespace CodEXpander::Tests {
         AssertAreEqual<u64>(expectedLineCount, fileContentLines.size());
     }
 
-    void TestSourceFileReader_ReadFileContent_ExistingFile_ContentIsCorrect() {
+    void TestFileManager_ReadFilesByLines_ExistingFile_ContentIsCorrect() {
         const string filePath = "./res/test_file.cpp";
         const vector<string> expectedFileContent = {
             "int test(int a, int b) {",
@@ -45,14 +45,14 @@ namespace CodEXpander::Tests {
         const string workingDirectory = "./res";
 
         vector<HeaderToken> tokens = GetTokensFromFile(filePath);
-        const vector<string> headerOneContent = GetHeaderContent(tokens[0], workingDirectory);
-        const vector<string> headerTwoContent = GetHeaderContent(tokens[1], workingDirectory);
+        const vector<string> headerOneContent = GetHeaderContent(tokens[0].fileName, workingDirectory);
+        const vector<string> headerTwoContent = GetHeaderContent(tokens[1].fileName, workingDirectory);
 
         AssertAreEqual<u64>(expectedHeaderContentSize, headerOneContent.size());
         AssertAreEqual<u64>(expectedHeaderContentSize, headerTwoContent.size());
     }
 
-    void TestSourceFileReader_TryWriteToFile_NoFilePath_NotWritingToFile() {
+    void TestFileManager_TryWriteToFile_NoFilePath_NotWritingToFile() {
         const auto expectedResult = false;
         const string outputFile = "./res/expanded_source_file.cpp";
 
@@ -65,7 +65,7 @@ namespace CodEXpander::Tests {
         AssertAreEqual<bool>(expectedResult, outputPathExists);
     }
 
-    void TestSourceFileReader_TryWriteToFile_NoFileContent_NotWritingToFile() {
+    void TestFileManager_TryWriteToFile_NoFileContent_NotWritingToFile() {
         const auto expectedResult = false;
         const string outputFile = "";
 
@@ -78,27 +78,27 @@ namespace CodEXpander::Tests {
         AssertAreEqual<bool>(expectedResult, outputPathExists);
     }
 
-    void TestSourceFileReader_TryWriteToFile_ValidPathAndContent_WritesToFile() {
+    void TestFileManager_TryWriteToFile_ValidPathAndContent_WritesToFile() {
         const auto expectedResult = true;
-        const string filePath = "./res/source_file_with_two_local_headers.cpp";
+        string filePath = "./res/source_file_with_two_local_headers.cpp";
         const string workingDirectory = "./res";
         const string outputFile = "./res/expanded_source_file.cpp";
 
-        vector<HeaderToken> includeHeaders = GetTokensFromFile(filePath);
-        vector<string> fileContent = ReadFileByLines(filePath);
-        ExpandHeaderIncludes(fileContent, includeHeaders, workingDirectory);
+        HeaderDependencyGraph dependencyGraph(filePath, workingDirectory);
+        auto countedHeaderFiles = dependencyGraph.GetHeaderFilesSortedByOccurences();
+        vector<string> expandedSourceFile = ExpandHeaderIncludes(filePath, countedHeaderFiles, workingDirectory);
 
         path outputFilePath(outputFile);
-        auto wroteToFile = TryWriteToFile(outputFile, fileContent);
+        auto wroteToFile = TryWriteToFile(outputFile, expandedSourceFile);
         auto outputPathExists = exists(outputFilePath);
 
         AssertAreEqual<bool>(expectedResult, wroteToFile);
         AssertAreEqual<bool>(expectedResult, outputPathExists);
 
         vector<string> outputFileContent = ReadFileByLines(outputFile);
-        AssertAreEqual<u64>(fileContent.size(), outputFileContent.size());
+        AssertAreEqual<u64>(expandedSourceFile.size(), outputFileContent.size());
 
-        for (u64 i = 0; i < outputFileContent.size(); i++)
-            AssertStringsAreEqual(fileContent[i], outputFileContent[i]);
+        for (auto i = 0; i < outputFileContent.size(); i++)
+            AssertStringsAreEqual(expandedSourceFile[i], outputFileContent[i]);
     }
 }

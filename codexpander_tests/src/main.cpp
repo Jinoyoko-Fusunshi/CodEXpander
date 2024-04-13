@@ -20,21 +20,11 @@ int main(int argumentCount, char* arguments[]) {
 
 vector<TestMethod> GetAllTests() {
     vector<TestMethod> tests = {
-        CreateNamedTestMethod(TestSourceFileReader_ReadFileContent_NotExistingFile_EmptyContent),
-        CreateNamedTestMethod(TestSourceFileReader_ReadFileContent_ExistingFile_ContentIsCorrect),
-        CreateNamedTestMethod(TestSourceFileReader_ReadSourceFile_NoHeaderIncludes_FoundNoTokens),
-        CreateNamedTestMethod(TestSourceFileReader_ReadSourceFile_HeaderIncludes_FoundLocalTokens_TokensAreCorrect),
-        CreateNamedTestMethod(TestSourceFileReader_ReadSourceFile_HeaderIncludes_FoundExternalTokens_TokensAreCorrect),
-        CreateNamedTestMethod(TestSourceFileReader_ReadSourceFile_HeaderIncludes_FoundExternalAndLocalTokens_TokensAreCorrect),
-        CreateNamedTestMethod(TestSourceFileReader_ReadHeaderFile_HeaderIncludes_FoundExternalTokens_TokensAreCorrect),
-        CreateNamedTestMethod(TestSourceFileReader_ReadSourceFile_HeaderFileNotExists_GetHeaderContent_EmptyResult),
-        CreateNamedTestMethod(TestSourceFileReader_ReadSourceFile_HeaderFileExists_GetHeaderContent_ContentIsCorrect),
-
-        CreateNamedTestMethod(TestSourceFileExpander_ExpandHeaderIncludes_NoInlcudes_FileContentIsEqual),
-        CreateNamedTestMethod(TestSourceFileExpander_ExpandHeaderIncludes_OneInlcude_NewFileContentIsCorrect),
-        CreateNamedTestMethod(TestSourceFileReader_TryWriteToFile_NoFilePath_NotWritingToFile),
-        CreateNamedTestMethod(TestSourceFileReader_TryWriteToFile_NoFileContent_NotWritingToFile),
-        CreateNamedTestMethod(TestSourceFileReader_TryWriteToFile_ValidPathAndContent_WritesToFile),
+        CreateNamedTestMethod(TestFileManager_ReadFilesByLines_NotExistingFile_EmptyContent),
+        CreateNamedTestMethod(TestFileManager_ReadFilesByLines_ExistingFile_ContentIsCorrect),
+        CreateNamedTestMethod(TestFileManager_TryWriteToFile_NoFilePath_NotWritingToFile),
+        CreateNamedTestMethod(TestFileManager_TryWriteToFile_NoFileContent_NotWritingToFile),
+        CreateNamedTestMethod(TestFileManager_TryWriteToFile_ValidPathAndContent_WritesToFile),
         
         CreateNamedTestMethod(TestHeaderIncludeExpander_GetTokensFromFiles_NoHeaderIncludes_FoundNoTokens),
         CreateNamedTestMethod(TestHeaderIncludeExpander_GetTokensFromFile_FoundLocalTokens_TokensAreCorrect),

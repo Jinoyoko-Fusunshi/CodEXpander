@@ -4,6 +4,7 @@
 #include "test_system.h"
 #include "test_system.hpp"
 #include "test_header_include_expander.h"
+#include <header_dependy_finder.h>
 
 using namespace std::filesystem;
 using namespace CodEXpander::Core;
@@ -128,9 +129,12 @@ namespace CodEXpander::Tests {
         }
     }
 
-    void TestSourceFileExpander_ExpandHeaderIncludes_OneInlcude_NewFileContentIsCorrect() {
+    void TestHeaderIncludeExpander_ExpandHeaderIncludes_OneInlcude_NewFileContentIsCorrect() {
         const vector<string> expectedFileContent = {
-            "#pragma once",
+            "",
+            "struct TestStructTwo {",
+            "    int testField;",
+            "}",                  
             "",
             "struct TestStructOne {",
             "    int testField;",
@@ -140,24 +144,20 @@ namespace CodEXpander::Tests {
             "    int x = 2 * 10;",
             "    int y = x - 20;",
             "}",
-            "",
-            "#pragma once",
-            "",
-            "struct TestStructTwo {",
-            "    int testField;",
-            "}"
+            ""
         };
 
         const string workingDirectory = "./res";
-        const string filePath = "./res/source_file_with_two_local_headers.cpp";
+        string filePath = "./res/source_file_with_two_local_headers.cpp";
         const vector<HeaderToken> includeHeaders = GetTokensFromFile(filePath);
-        vector<string> fileContent = ReadFileByLines(filePath);
 
-        ExpandHeaderIncludes(fileContent, std::move(includeHeaders), workingDirectory);
-        AssertAreEqual<u64>(expectedFileContent.size(), fileContent.size());
+        HeaderDependencyGraph dependencyGraph(filePath, workingDirectory);
+        vector<string> sortedHeaderFileIncludes = dependencyGraph.GetHeaderFilesSortedByOccurences();
+        vector<string> expandedSourceFile = ExpandHeaderIncludes(filePath, sortedHeaderFileIncludes, workingDirectory);
+        AssertAreEqual<u64>(expectedFileContent.size(), expandedSourceFile.size());
 
-        for (u64 i = 0; i < fileContent.size(); i++) {
-            const auto currentLine = fileContent[i];
+        for (u64 i = 0; i < expandedSourceFile.size(); i++) {
+            const auto currentLine = expandedSourceFile[i];
             AssertStringsAreEqual(expectedFileContent[i], currentLine);
         }
     }
