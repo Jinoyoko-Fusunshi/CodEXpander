@@ -1,19 +1,36 @@
 #include <iterator>
 #include <fstream>
+#include <algorithm>
+#include <optional>
+#include <filesystem>
 #include "file_manager.h"
 #include "header_inlcude_expander.h"
 
-using std::vector, std::string, std::distance, std::ofstream, std::endl;
+using std::vector, std::string, std::distance, std::ofstream, std::endl, std::find, std::optional, std::nullopt, std::filesystem::path;
 
 namespace CodEXpander::Core {
-    vector<string> GetCopyOfExpandedSourceFileContent(vector<string> fileContent, vector<HeaderToken> foundHeaderIncludes, const string workingDirectory) {
-        vector<string> replacedFileContent(fileContent);
-        ExpandHeaderIncludes(replacedFileContent, std::move(foundHeaderIncludes), workingDirectory);
+    enum class IncludeTagType {
+        None = 0,
+        Start,
+        End
+    };
 
-        return std::move(replacedFileContent);
-    }
+    struct IncludeEntry {
+        u64 position;
+        HeaderFileType headerType;
+        IncludeTagType tagType;
+    };
 
-    void ExpandHeaderIncludes(vector<string> &fileContent, vector<HeaderToken> headerIncludes, const string &workingDirectory) {
+    u64 FindIncludeMacro(const string &line);
+
+    optional<IncludeEntry> FindIncludeStartingTag(const string &line, u64 startPosition);
+
+    optional<IncludeEntry> FindIncludeClosingTag(const string &line, u64 startPosition);
+
+    IncludeEntry FindTag(const string &line, const string& tag, u64 startPosition,
+        HeaderFileType headerType, IncludeTagType tagType);
+
+    vector<string> ExpandHeaderIncludes(vector<string> &fileContent, vector<HeaderToken> headerIncludes, const string &workingDirectory) {
         u64 lineOffset = 0;
 
         for (auto headerInclude : headerIncludes)

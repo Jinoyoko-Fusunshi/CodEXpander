@@ -35,6 +35,17 @@ vector<TestMethod> GetAllTests() {
         CreateNamedTestMethod(TestSourceFileReader_TryWriteToFile_NoFilePath_NotWritingToFile),
         CreateNamedTestMethod(TestSourceFileReader_TryWriteToFile_NoFileContent_NotWritingToFile),
         CreateNamedTestMethod(TestSourceFileReader_TryWriteToFile_ValidPathAndContent_WritesToFile),
+        
+        CreateNamedTestMethod(TestHeaderIncludeExpander_GetTokensFromFiles_NoHeaderIncludes_FoundNoTokens),
+        CreateNamedTestMethod(TestHeaderIncludeExpander_GetTokensFromFile_FoundLocalTokens_TokensAreCorrect),
+        CreateNamedTestMethod(TestHeaderIncludeExpander_GetTokensFromFile_FoundExternalTokens_TokensAreCorrect),
+        CreateNamedTestMethod(TestHeaderIncludeExpander_GetTokensFromFile_FoundTwoExternalTokens_TokensAreCorrect),
+        CreateNamedTestMethod(TestHeaderIncludeExpander_GetTokensFromFile_FoundExternalAndLocalTokens_TokensAreCorrect),
+        CreateNamedTestMethod(TestHeaderIncludeExpander_GetTokensFromFile_FoundExternalTokens_TokensAreCorrect),
+        CreateNamedTestMethod(TestHeaderIncludeExpander_GetTokensFromFile_HeaderFileNotExists_GetHeaderContent_EmptyResult),
+        CreateNamedTestMethod(TestHeaderIncludeExpander_GetTokensFromFile_HeaderFileExists_GetHeaderContent_ContentIsCorrect),
+        CreateNamedTestMethod(TestHeaderIncludeExpander_ExpandHeaderIncludes_NoInlcudes_FileContentIsEqual),
+        CreateNamedTestMethod(TestHeaderIncludeExpander_ExpandHeaderIncludes_OneInlcude_NewFileContentIsCorrect),
 
         CreateNamedTestMethod(TestCommandParser_ParseArguments_StringIsEmpty_NoArguments),
         CreateNamedTestMethod(TestCommandParser_ParseArguments_ArgumentWithOnePrexifSymbol_ReturnsNoArguments),

@@ -1,13 +1,21 @@
 #pragma once
 
 namespace CodEXpander::Tests {
-    void TestSourceFileExpander_ExpandHeaderIncludes_NoInlcudes_FileContentIsEqual();
+    void TestHeaderIncludeExpander_GetTokensFromFiles_NoHeaderIncludes_FoundNoTokens();
 
-    void TestSourceFileExpander_ExpandHeaderIncludes_OneInlcude_NewFileContentIsCorrect();
+    void TestHeaderIncludeExpander_GetTokensFromFile_FoundLocalTokens_TokensAreCorrect();
 
-    void TestSourceFileReader_TryWriteToFile_NoFilePath_NotWritingToFile();
+    void TestHeaderIncludeExpander_GetTokensFromFile_FoundExternalTokens_TokensAreCorrect();
 
-    void TestSourceFileReader_TryWriteToFile_NoFileContent_NotWritingToFile();
+    void TestHeaderIncludeExpander_GetTokensFromFile_FoundTwoExternalTokens_TokensAreCorrect();
 
-    void TestSourceFileReader_TryWriteToFile_ValidPathAndContent_WritesToFile();
+    void TestHeaderIncludeExpander_GetTokensFromFile_FoundExternalAndLocalTokens_TokensAreCorrect();
+
+    void TestHeaderIncludeExpander_GetTokensFromFile_HeaderFileNotExists_GetHeaderContent_EmptyResult();
+
+    void TestHeaderIncludeExpander_GetTokensFromFile_HeaderFileExists_GetHeaderContent_ContentIsCorrect();
+
+    void TestHeaderIncludeExpander_ExpandHeaderIncludes_NoInlcudes_FileContentIsEqual();
+
+    void TestHeaderIncludeExpander_ExpandHeaderIncludes_OneInlcude_NewFileContentIsCorrect();
 }
