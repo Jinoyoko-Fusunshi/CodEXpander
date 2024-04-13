@@ -1,0 +1,25 @@
+name: CodeEXpander CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+    - name: Build make projects
+      run: |
+        echo "CI automatically triggered by ${{ github.event_name }} event." 
+        echo "Building CodeEXpander CLI tool..."
+        make all_codexpander_release
+        echo "Finished building CodeEXpander CLI tool"
+    - name: Upload CLI artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: CodEXpander CLI tool
+        path: codexpander/bin/codexpander
