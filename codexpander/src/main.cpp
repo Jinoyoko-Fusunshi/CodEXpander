@@ -10,7 +10,7 @@
 using namespace CodEXpander::Core;
 using std::string, std::vector, std::filesystem::path, std::pair;
 
-void WriteExpandedContentToFile(string sourceFile, string outputFile, string workingDirectory);
+void WriteExpandedContentToFile(const string &sourceFile, string &outputFile, string &workingDirectory);
 
 int main(int argument_count, c8 *raw_arguments[]) {
     vector<string> arguments;
@@ -21,8 +21,8 @@ int main(int argument_count, c8 *raw_arguments[]) {
 
     auto parsedArguments = ParseArguments(argument_count, arguments);
     if (Argument source_argument; TryGetExistingArgument(parsedArguments, "source_file", source_argument)) {
+        const string sourceFile = source_argument.value;
         string workingDirectory = "./";
-        string sourceFile = source_argument.value;
         string outputFile = "./temp_extended_filename.cpp";
         
         if (Argument argument; TryGetExistingArgument(parsedArguments, "output_file", argument))
@@ -37,9 +37,9 @@ int main(int argument_count, c8 *raw_arguments[]) {
     return 0;
 }
 
-void WriteExpandedContentToFile(string sourceFile, string outputFile, string workingDirectory) {
+void WriteExpandedContentToFile(const string &sourceFile, string &outputFile, string &workingDirectory) {
     HeaderDependencyGraph dependencyGraph(sourceFile, workingDirectory);
-    auto countedHeaderFiles = dependencyGraph.GetHeaderFilesSortedByOccurences();
+    const auto countedHeaderFiles = dependencyGraph.GetHeaderFilesSortedByOccurences();
     auto expandedSourceFileContent = ExpandHeaderIncludes(sourceFile, countedHeaderFiles, workingDirectory);
-    auto wroteToFile = TryWriteToFile(outputFile, expandedSourceFileContent);
+    const auto wroteToFile = TryWriteToFile(outputFile, expandedSourceFileContent);
 }

@@ -12,14 +12,14 @@ vector<TestMethod> GetAllTests();
 #define CreateNamedTestMethod(testMethodName) CreateTestMethod(#testMethodName, testMethodName)
 
 int main(int argumentCount, char* arguments[]) {
-    vector<TestMethod> allTests = GetAllTests();
+    const vector<TestMethod> allTests = GetAllTests();
     RunTests(std::move(allTests));
 
     return 0;
 }
 
 vector<TestMethod> GetAllTests() {
-    vector<TestMethod> tests = {
+    const vector<TestMethod> tests = {
         CreateNamedTestMethod(TestFileManager_ReadFilesByLines_NotExistingFile_EmptyContent),
         CreateNamedTestMethod(TestFileManager_ReadFilesByLines_ExistingFile_ContentIsCorrect),
         CreateNamedTestMethod(TestFileManager_TryWriteToFile_NoFilePath_NotWritingToFile),

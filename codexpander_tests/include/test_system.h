@@ -9,9 +9,9 @@ namespace CodEXpander::Tests {
         void (*callback)();
     };
 
-    TestMethod CreateTestMethod(std::string name, void (*callback)());
+    TestMethod CreateTestMethod(const std::string name, void (*callback)());
 
-    void RunTests(std::vector<TestMethod> tests);
+    void RunTests(const std::vector<TestMethod> &tests);
 
     void AssertStringsAreEqual(const std::string &expectedValue, const std::string &actualValue);
 }

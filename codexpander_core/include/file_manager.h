@@ -7,5 +7,5 @@
 namespace CodEXpander::Core {
     std::vector<std::string> ReadFileByLines(const std::string &filePath);
 
-    bool TryWriteToFile(std::string filePath, std::vector<std::string> &expandedFileContent);
+    bool TryWriteToFile(const std::string &filePath, const std::vector<std::string> &expandedFileContent);
 }

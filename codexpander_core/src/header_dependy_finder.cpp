@@ -15,7 +15,7 @@ namespace CodEXpander::Core {
     void AddHeaderFileEntry(map<string, u64> &countedHeaderFiles, HeaderFileIncludes &headerFile);
 
     HeaderDependencyGraph::HeaderDependencyGraph(const string &sourceFileName, const string &workingDirectory) {
-        HeaderToken token = {
+        const HeaderToken token = {
             .fileName = sourceFileName,
             .lineNumber = 0,
             .headerType = HeaderFileType::Local
@@ -26,7 +26,7 @@ namespace CodEXpander::Core {
     }
 
     void HeaderDependencyGraph::AddHeaderFiles(HeaderFileIncludes &parentHeader, const string &fileName, const string &workingDirectory) {
-        auto filterHeaderFiles = [fileName](HeaderFileIncludes include) {
+        const auto filterHeaderFiles = [fileName](HeaderFileIncludes include) {
             return include.headerFile.fileName.compare(fileName) == 0;
         };
         auto filteredHeaders = foundHeaderFiles | filter(filterHeaderFiles);
@@ -36,18 +36,18 @@ namespace CodEXpander::Core {
             auto existingHeaderFile = existingHeaderFiles[0];
             childHeaders = vector(existingHeaderFile.innerIncludes.begin(), existingHeaderFile.innerIncludes.end());
         } else {
-            auto headerTokens = GetTokensFromFile(fileName);
-            for (auto token : headerTokens) {
-                HeaderFileIncludes childHeader = {
-                    .headerFile = token
+            const auto headerTokens = GetTokensFromFile(fileName);
+            for (const auto &token : headerTokens) {
+                const HeaderFileIncludes childHeader = {
+                    .headerFile = std::move(token)
                 };
-                childHeaders.emplace_back(childHeader);
+                childHeaders.emplace_back(std::move(childHeader));
             }
         }
 
-        for (auto childHeader : childHeaders) {
-            auto childHeaderFileName = workingDirectory + "include/" + childHeader.headerFile.fileName;
-            AddHeaderFiles(childHeader, childHeaderFileName, workingDirectory);
+        for (auto &childHeader : childHeaders) {
+            const auto childHeaderFileName = workingDirectory + "include/" + childHeader.headerFile.fileName;
+            AddHeaderFiles(childHeader, std::move(childHeaderFileName), workingDirectory);
             parentHeader.innerIncludes.emplace_back(childHeader);
             RegisterHeader(childHeader);
         }
@@ -63,21 +63,19 @@ namespace CodEXpander::Core {
     }
 
     vector<string> HeaderDependencyGraph::GetHeaderFilesSortedByOccurences() {
-        map<string, u64> haederFilesByIncludeCount = CountHeaderOccurences();
+        const map<string, u64> haederFilesByIncludeCount = CountHeaderOccurences();
         vector<pair<string, u64>> countedHeaderFilesPairs;
-        for (auto headerFileCountPair : haederFilesByIncludeCount)
+        for (const auto &headerFileCountPair : haederFilesByIncludeCount)
             countedHeaderFilesPairs.emplace_back(headerFileCountPair);
 
-        auto sortHeaderFilesByCount = [](pair<string, u64> current, pair<string, u64> next) {
+        const auto sortHeaderFilesByCount = [](pair<string, u64> current, pair<string, u64> next) {
             return current.second >= next.second;
         };
 
         sort(countedHeaderFilesPairs.begin(), countedHeaderFilesPairs.end(), sortHeaderFilesByCount);
         vector<string> sortedHeaderFiles;
-        for (auto headerFileCountPair : countedHeaderFilesPairs) {
-            auto headerFileName = headerFileCountPair.first;
-            sortedHeaderFiles.emplace_back(std::move(headerFileName));
-        }
+        for (const auto &headerFileCountPair : countedHeaderFilesPairs)
+            sortedHeaderFiles.emplace_back(std::move(headerFileCountPair.first));
 
         return std::move(sortedHeaderFiles);
     }
@@ -94,14 +92,14 @@ namespace CodEXpander::Core {
                 AddHeaderFileEntry(countedHeaderFiles, innerInclude);
         }
 
-        auto headerFileName = headerInclude.headerFile.fileName;
-        if (countedHeaderFiles.contains(headerInclude.headerFile.fileName)) {
+        const auto headerFileName = headerInclude.headerFile.fileName;
+        if (countedHeaderFiles.contains(headerFileName)) {
             u64 &headerFileCount = countedHeaderFiles[headerFileName];
             headerFileCount += 1;
             return;
         }
 
-        auto newPair = std::make_pair<string, u64>(std::move(headerInclude.headerFile.fileName), 1);
+        const auto newPair = std::make_pair<string, u64>(std::move(headerInclude.headerFile.fileName), 1);
         countedHeaderFiles.insert(std::move(newPair));
     }
 }

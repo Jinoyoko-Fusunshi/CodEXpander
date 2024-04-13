@@ -14,7 +14,7 @@ namespace CodEXpander::Core {
         if (!fileStream.is_open())
             return std::move(fileLines);
 
-        unsigned int lineCount = 0;
+        u64 lineCount = 0;
         string currentLine;
         while (getline(fileStream, currentLine)) {
             lineCount++;
@@ -26,7 +26,7 @@ namespace CodEXpander::Core {
         return std::move(fileLines);
     }
 
-     bool TryWriteToFile(string filePath, vector<string> &expandedFileContent) {
+    bool TryWriteToFile(const string &filePath, const vector<string> &expandedFileContent) {
         if (expandedFileContent.size() == 0)
             return false;
         
@@ -34,7 +34,7 @@ namespace CodEXpander::Core {
         if (!fileStream.is_open())
             return false;
 
-        for (auto currentLine : expandedFileContent)
+        for (const auto &currentLine : expandedFileContent)
             fileStream << currentLine << endl;
 
         fileStream.close();

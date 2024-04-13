@@ -8,7 +8,7 @@ using std::string, std::vector, std::to_string, std::chrono::steady_clock, std::
 using namespace CodEXpander::Core;
 
 namespace CodEXpander::Tests {
-    string GetElapsedTimeInSeconds(steady_clock::time_point start, steady_clock::time_point end);
+    string GetElapsedTimeInSeconds(const steady_clock::time_point &start, const steady_clock::time_point &end);
 
     TestMethod CreateTestMethod(const string name, void (*callback)()) {
         TestMethod testmethod = {
@@ -19,7 +19,7 @@ namespace CodEXpander::Tests {
         return testmethod;
     }
 
-    void RunTests(vector<TestMethod> tests) {
+    void RunTests(const vector<TestMethod> &tests) {
         vector<TestMethod> failedTests;
         vector<TestMethod> passedTests; 
         vector<string> outputLogs;
@@ -48,13 +48,13 @@ namespace CodEXpander::Tests {
                 failedTests.emplace_back(std::move(test));
             }
             const auto testEndTime = steady_clock::now();
-            const auto elapsedSecondsMessage = GetElapsedTimeInSeconds(testStartTime, testEndTime);
+            const string elapsedSecondsMessage = GetElapsedTimeInSeconds(testStartTime, testEndTime);
 
             PrintMessage(outputLogs, resultMessage, color);
             PrintMessage(outputLogs, ": \n\t\t" + elapsedSecondsMessage + "\n\n", Color().White());
         }
         const auto testsEndTime = steady_clock::now();
-        const auto elapsedSecondsMessage = GetElapsedTimeInSeconds(testsStartTime, testsEndTime);
+        const string elapsedSecondsMessage = GetElapsedTimeInSeconds(testsStartTime, testsEndTime);
 
         PrintLineInfoMessage(outputLogs, "");
         PrintMessage(outputLogs, "Finished running tests: ", Color().Green());
@@ -81,7 +81,7 @@ namespace CodEXpander::Tests {
         }
     }
 
-    string GetElapsedTimeInSeconds(steady_clock::time_point start, steady_clock::time_point end) {
+    string GetElapsedTimeInSeconds(const steady_clock::time_point &start, const steady_clock::time_point &end) {
         const auto elapsedSeconds = duration<double>(end - start);
         const auto elapsedSecondsMessage = to_string(elapsedSeconds.count()) + "s";
         return std::move(elapsedSecondsMessage);

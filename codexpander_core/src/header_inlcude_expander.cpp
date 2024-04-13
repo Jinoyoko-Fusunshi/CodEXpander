@@ -23,31 +23,31 @@ namespace CodEXpander::Core {
 
     u64 FindIncludeMacro(const string &line);
 
-    optional<IncludeEntry> FindIncludeStartingTag(const string &line, u64 startPosition);
+    optional<IncludeEntry> FindIncludeStartingTag(const string &line, const u64 startPosition);
 
-    optional<IncludeEntry> FindIncludeClosingTag(const string &line, u64 startPosition);
+    optional<IncludeEntry> FindIncludeClosingTag(const string &line, const u64 startPosition);
 
     IncludeEntry FindTag(const string &line, const string& tag, u64 startPosition,
         HeaderFileType headerType, IncludeTagType tagType);
 
-    vector<string> ExpandHeaderIncludes(string &sourceFile, vector<string> headerFiles, const string &workingDirectory) {
+    vector<string> ExpandHeaderIncludes(const string &sourceFile, vector<string> headerFiles, const string &workingDirectory) {
         u64 lineOffset = 0;
-        auto headerTokens = GetTokensFromFile(sourceFile);
+        const vector<HeaderToken> headerTokens = GetTokensFromFile(sourceFile);
         if (headerTokens.size() == 0)
             return vector<string>();
 
         auto sourceFileContent = ReadFileByLines(sourceFile);
-        auto firstHeaderIncludeIndex = headerTokens[0].lineNumber -1;
-        for (auto headerInclude : headerTokens) {
-            auto lineIndex = headerInclude.lineNumber - lineOffset -1;
-            auto linePosition = sourceFileContent.begin() + lineIndex;
+        const auto firstHeaderIncludeIndex = headerTokens[0].lineNumber -1;
+        for (const auto &headerInclude : headerTokens) {
+            const auto lineIndex = headerInclude.lineNumber - lineOffset -1;
+            const auto linePosition = sourceFileContent.begin() + lineIndex;
 
             sourceFileContent.erase(linePosition);
             lineOffset += 1;
         }
 
         lineOffset = 0;
-        for (auto headerFile : headerFiles)
+        for (auto &headerFile : headerFiles)
             ExpandHeaderInclude(sourceFileContent, headerFile, workingDirectory, firstHeaderIncludeIndex + lineOffset, lineOffset);
 
         return std::move(sourceFileContent);
@@ -55,22 +55,23 @@ namespace CodEXpander::Core {
 
     void ExpandHeaderInclude(vector<string> &fileContent, string &headerFile, const string &workingDirectory, u64 lineIndex, u64 &linesOffset)  {
         vector<string> headerContent = GetHeaderContent(headerFile, workingDirectory);
-        auto headerContentSize = headerContent.size();
+        const auto headerContentSize = headerContent.size();
         if (headerContentSize == 0)
             return;
 
         auto copiedLinesCount = 0;
         for (u64 i = 0; i < headerContentSize; i++) {
             auto nextLinePosition = fileContent.begin() + lineIndex + copiedLinesCount;
-            u64 nextLineIndex = distance(fileContent.begin(), nextLinePosition);
+            const u64 nextLineIndex = distance(fileContent.begin(), nextLinePosition);
             if (nextLineIndex >= fileContent.size())
                 nextLinePosition = fileContent.end();
 
+            const auto currentLineNumber = i + 1;
             string &currentLine = headerContent[i];
-            if (HeaderToken token; TryGetHeaderToken(currentLine, i + 1, token))
+            if (HeaderToken token; TryGetHeaderToken(currentLine, currentLineNumber, token))
                 continue;
 
-            if (string pragmaValue; TryGetPrgramaDirective(currentLine, i + 1, pragmaValue)) {
+            if (string pragmaValue; TryGetPrgramaDirective(currentLine, currentLineNumber, pragmaValue)) {
                 if (pragmaValue.compare("once") == 0)
                     continue;
             }
@@ -99,7 +100,7 @@ namespace CodEXpander::Core {
         return std::move(foundTokens);
     }
 
-    bool TryGetHeaderToken(string &line, u64 lineNumber, HeaderToken &foundHeaderToken) {
+    bool TryGetHeaderToken(string &line, const u64 lineNumber, HeaderToken &foundHeaderToken) {
         const u64 includePosition = FindIncludeMacro(line);
         if (includePosition == string::npos)
             return false;
@@ -128,7 +129,7 @@ namespace CodEXpander::Core {
         return true;
     }
 
-    bool TryGetPrgramaDirective(std::string &line, u64 lineNumber, std::string &foundDirective) {
+    bool TryGetPrgramaDirective(std::string &line, const u64 lineNumber, std::string &foundDirective) {
         const string pragmaMacroStatement = "#pragma";
         const u64 pragmaMacroPosition = line.find(pragmaMacroStatement);
 
