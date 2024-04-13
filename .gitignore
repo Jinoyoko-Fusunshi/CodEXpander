@@ -5,3 +5,7 @@
 
 # IDE files
 \.idea
+
+# temp files
+*.bkp
+*.dtmp
