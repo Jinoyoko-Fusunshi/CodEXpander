@@ -22,17 +22,16 @@ namespace CodEXpander::Tests {
     void RunTests(const vector<TestMethod> &tests) {
         vector<TestMethod> failedTests;
         vector<TestMethod> passedTests; 
-        vector<string> outputLogs;
-
-        PrintMessage(outputLogs, "Running tests: ", Color().Green());
-        PrintLineInfoMessage(outputLogs, to_string(tests.size()));
-        PrintLineMessage(outputLogs, "========================================================", Color().White());
+        Logger logger;
+        logger.PrintMessage("Running tests: ", Color().Green());
+        logger.PrintLineInfoMessage(to_string(registeredTests.size()));
+        logger.PrintLineMessage("========================================================", Color().White());
 
         const auto testsStartTime = steady_clock::now();
         for (const auto& test : tests) {
-            PrintMessage(outputLogs, string(">> "), Color().White());
-            PrintMessage(outputLogs, test.testName, Color().Cyan());
-            PrintLineMessage(outputLogs, string(":"), Color().White());
+            logger.PrintMessage(string(">> "), Color().White());
+            logger.PrintMessage(test.testName, Color().Cyan());
+            logger.PrintLineMessage(string(":"), Color().White());
 
             string resultMessage;
             Color color;
@@ -50,26 +49,26 @@ namespace CodEXpander::Tests {
             const auto testEndTime = steady_clock::now();
             const string elapsedSecondsMessage = GetElapsedTimeInSeconds(testStartTime, testEndTime);
 
-            PrintMessage(outputLogs, resultMessage, color);
-            PrintMessage(outputLogs, ": \n\t\t" + elapsedSecondsMessage + "\n\n", Color().White());
+            logger.PrintMessage(resultMessage, color);
+            logger.PrintMessage(": \n\t\t" + elapsedSecondsMessage + "\n\n", Color().White());
         }
         const auto testsEndTime = steady_clock::now();
         const string elapsedSecondsMessage = GetElapsedTimeInSeconds(testsStartTime, testsEndTime);
 
-        PrintLineInfoMessage(outputLogs, "");
-        PrintMessage(outputLogs, "Finished running tests: ", Color().Green());
-        PrintMessage(outputLogs, elapsedSecondsMessage, Color().Cyan());
-        PrintMessage(outputLogs, "\n========================================================\n", Color().White());
-        PrintMessage(outputLogs, "Passed Tests: ", Color().Green());
-        PrintInfoMessage(outputLogs, to_string(passedTests.size()));
-        PrintMessage(outputLogs, " of ", Color().White());
-        PrintInfoMessage(outputLogs, to_string(tests.size()));
+        logger.PrintLineInfoMessage("");
+        logger.PrintMessage("Finished running tests: ", Color().Green());
+        logger.PrintMessage(elapsedSecondsMessage, Color().Cyan());
+        logger.PrintMessage("\n========================================================\n", Color().White());
+        logger.PrintMessage("Passed Tests: ", Color().Green());
+        logger.PrintInfoMessage(to_string(passedTests.size()));
+        logger.PrintMessage(" of ", Color().White());
+        logger.PrintInfoMessage(to_string(registeredTests.size()));
 
-        PrintMessage(outputLogs, "\n\nFailed Tests: ", Color().Red());
-        PrintInfoMessage(outputLogs, to_string(failedTests.size()));
-        PrintMessage(outputLogs, " of ", Color().White());
-        PrintInfoMessage(outputLogs, to_string(tests.size()));
-        PrintLineMessage(outputLogs, "", Color().White());
+        logger.PrintMessage("\n\nFailed Tests: ", Color().Red());
+        logger.PrintInfoMessage(to_string(failedTests.size()));
+        logger.PrintMessage(" of ", Color().White());
+        logger.PrintInfoMessage(to_string(registeredTests.size()));
+        logger.PrintLineMessage("", Color().White());
     }
 
     void AssertStringsAreEqual(const std::string &expectedValue, const std::string &actualValue) {

@@ -6,41 +6,41 @@
 using std::vector, std::string, std::cout;
 
 namespace CodEXpander::Core {
-    Color infoColor = Color().Cyan();
-    Color errorColor = Color().Red();
-    Color warningColor = Color().Yellow();
+    auto infoColor = Color().Cyan();
+    auto errorColor = Color().Red();
+    auto warningColor = Color().Yellow();
 
-    void PrintLineInfoMessage(vector<string> &messageTraceLogs, const string message) {
-        PrintLineMessage(messageTraceLogs, message, infoColor);
+    void Logger::PrintLineInfoMessage(const string message) {
+        PrintLineMessage(message, infoColor);
     }
 
-    void PrintInfoMessage(vector<string> &messageTraceLogs,  const string message) {
-        PrintMessage(messageTraceLogs, message, infoColor);
+    void Logger::PrintInfoMessage(const string message) {
+        PrintMessage(message, infoColor);
     }
 
-    void PrintLineErrorMessage(vector<string> &messageTraceLogs, const string message) {
-        PrintLineMessage(messageTraceLogs, message, errorColor);
+    void Logger::PrintLineErrorMessage(const string message) {
+        PrintLineMessage(message, errorColor);
     }
 
-    void PrintErrorMessage(vector<string> &messageTraceLogs, const string message) {
-        PrintMessage(messageTraceLogs, message, errorColor);
+    void Logger::PrintErrorMessage(const string message) {
+        PrintMessage(message, errorColor);
     }
 
-    void PrintLineWarningMessage(vector<string> &messageTraceLogs, const string message) {
-        PrintLineMessage(messageTraceLogs, message, warningColor);
+    void Logger::PrintLineWarningMessage(const string message) {
+        PrintLineMessage(message, warningColor);
     }
 
-    void PrintWarningMessage(vector<string> &messageTraceLogs, const string message) {
-        PrintMessage(messageTraceLogs, message, warningColor);
+    void Logger::PrintWarningMessage(const string message) {
+        PrintMessage(message, warningColor);
     }
 
-    void PrintLineMessage(vector<string> &messageTraceLogs, const string message, const Color color) {
+    void Logger::PrintLineMessage(const string message, const Color color) {
         string newLineMessage = message + "\n";
-        PrintMessage(messageTraceLogs, newLineMessage, color);
+        PrintMessage(newLineMessage, color);
     }
 
-    void PrintMessage(vector<string> &messageTraceLogs, const string message, const Color color) {
-        messageTraceLogs.emplace_back(message);
+    void Logger::PrintMessage(const string message, const Color color) {
+        outputLogs.emplace_back(message);
         cout << color.colorEscapeCharacter << message;
     }
 }
