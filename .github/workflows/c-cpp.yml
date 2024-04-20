@@ -16,7 +16,7 @@ jobs:
       run: |
         echo "CI automatically triggered by ${{ github.event_name }} event." 
         echo "Building CodeEXpander CLI tool..."
-        make all_codexpander_release
+        make build
         echo "Finished building CodeEXpander CLI tool"
     - name: Upload CLI artifact
       uses: actions/upload-artifact@v4

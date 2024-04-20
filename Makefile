@@ -1,5 +1,5 @@
 # global variables
-.DEFAULT_GOAL := all_codexpander_release
+.DEFAULT_GOAL := build
 SHELL = /bin/bash
 CC = g++ -std=c++20
 
@@ -8,8 +8,13 @@ CC = g++ -std=c++20
 debug_build:
 	$(eval CC=g++ -std=c++20 -g)
 
-all: all_core_release all_codexpander_release
+build: all_core_release all_codexpander_release
 
+install:
+	cp ./codexpander/bin/codexpander /usr/bin
+
+uninstall:
+	rm -f /usr/bin/codexpander
 
 # codexpander core properties
 core_project = codexpander_core
