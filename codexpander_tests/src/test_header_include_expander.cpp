@@ -2,7 +2,6 @@
 #include "file_manager.h"
 #include "header_inlcude_expander.h"
 #include "test_system.h"
-#include "test_system.hpp"
 #include "test_header_include_expander.h"
 #include <header_dependy_finder.h>
 
@@ -17,7 +16,7 @@ namespace CodEXpander::Tests {
 
         vector<HeaderToken> tokens = GetTokensFromFile(filePath);
 
-        AssertAreEqual<u64>(expectedHeaderTokenCount, tokens.size());
+        TestSystem::AssertAreEqual<u64>(expectedHeaderTokenCount, tokens.size());
     }
 
     void TestHeaderIncludeExpander_GetTokensFromFile_FoundLocalTokens_TokensAreCorrect() {
@@ -31,13 +30,13 @@ namespace CodEXpander::Tests {
         const string filePath = "./res/source_file_with_two_local_headers.cpp";
         vector<HeaderToken> tokens = GetTokensFromFile(filePath);
 
-        AssertAreEqual<u64>(expectedHeaderTokenCount, tokens.size());
-        AssertAreEqual<u64>(expectedHeaderOneLineNumber, tokens[0].lineNumber);
-        AssertStringsAreEqual(expectedHeaderOneFileName, tokens[0].fileName);
-        AssertAreEqual<int>(expectedHeaderType, static_cast<int>(tokens[0].headerType));
-        AssertAreEqual<u64>(expectedHeaderTwoLineNumber, tokens[1].lineNumber);
-        AssertStringsAreEqual(expectedHeaderTwoFileName, tokens[1].fileName);
-        AssertAreEqual<int>(expectedHeaderType, static_cast<int>(tokens[1].headerType));
+        TestSystem::AssertAreEqual<u64>(expectedHeaderTokenCount, tokens.size());
+        TestSystem::AssertAreEqual<u64>(expectedHeaderOneLineNumber, tokens[0].lineNumber);
+        TestSystem::AssertStringsAreEqual(expectedHeaderOneFileName, tokens[0].fileName);
+        TestSystem::AssertAreEqual<int>(expectedHeaderType, static_cast<int>(tokens[0].headerType));
+        TestSystem::AssertAreEqual<u64>(expectedHeaderTwoLineNumber, tokens[1].lineNumber);
+        TestSystem::AssertStringsAreEqual(expectedHeaderTwoFileName, tokens[1].fileName);
+        TestSystem::AssertAreEqual<int>(expectedHeaderType, static_cast<int>(tokens[1].headerType));
     }
 
     void TestHeaderIncludeExpander_GetTokensFromFile_FoundTwoExternalTokens_TokensAreCorrect() {
@@ -51,13 +50,13 @@ namespace CodEXpander::Tests {
         const string filePath = "./res/source_file_with_two_external_headers.cpp";
         vector<HeaderToken> tokens = GetTokensFromFile(filePath);
 
-        AssertAreEqual<u64>(expectedHeaderTokenCount, tokens.size());
-        AssertAreEqual<u64>(expectedHeaderOneLineNumber, tokens[0].lineNumber);
-        AssertStringsAreEqual(expectedHeaderOneFileName, tokens[0].fileName);
-        AssertAreEqual<int>(expectedHeaderType, static_cast<int>(tokens[0].headerType));
-        AssertAreEqual<u64>(expectedHeaderTwoLineNumber, tokens[1].lineNumber);
-        AssertStringsAreEqual(expectedHeaderTwoFileName, tokens[1].fileName);
-        AssertAreEqual<int>(expectedHeaderType, static_cast<int>(tokens[1].headerType));
+        TestSystem::AssertAreEqual<u64>(expectedHeaderTokenCount, tokens.size());
+        TestSystem::AssertAreEqual<u64>(expectedHeaderOneLineNumber, tokens[0].lineNumber);
+        TestSystem::AssertStringsAreEqual(expectedHeaderOneFileName, tokens[0].fileName);
+        TestSystem::AssertAreEqual<int>(expectedHeaderType, static_cast<int>(tokens[0].headerType));
+        TestSystem::AssertAreEqual<u64>(expectedHeaderTwoLineNumber, tokens[1].lineNumber);
+        TestSystem::AssertStringsAreEqual(expectedHeaderTwoFileName, tokens[1].fileName);
+        TestSystem::AssertAreEqual<int>(expectedHeaderType, static_cast<int>(tokens[1].headerType));
     }
 
     void TestHeaderIncludeExpander_GetTokensFromFile_FoundExternalAndLocalTokens_TokensAreCorrect() {
@@ -72,13 +71,13 @@ namespace CodEXpander::Tests {
         const string filePath = "./res/source_file_with_two_different_headers.cpp";
         vector<HeaderToken> tokens = GetTokensFromFile(filePath);
 
-        AssertAreEqual<u64>(expectedHeaderTokenCount, tokens.size());
-        AssertAreEqual<u64>(expectedHeaderOneLineNumber, tokens[0].lineNumber);
-        AssertStringsAreEqual(expectedHeaderOneFileName, tokens[0].fileName);
-        AssertAreEqual<int>(expectedHeaderOneType, static_cast<int>(tokens[0].headerType));
-        AssertAreEqual<u64>(expectedHeaderTwoLineNumber, tokens[1].lineNumber);
-        AssertStringsAreEqual(expectedHeaderTwoFileName, tokens[1].fileName);
-        AssertAreEqual<int>(expectedHeaderTwoType, static_cast<int>(tokens[1].headerType));
+        TestSystem::AssertAreEqual<u64>(expectedHeaderTokenCount, tokens.size());
+        TestSystem::AssertAreEqual<u64>(expectedHeaderOneLineNumber, tokens[0].lineNumber);
+        TestSystem::AssertStringsAreEqual(expectedHeaderOneFileName, tokens[0].fileName);
+        TestSystem::AssertAreEqual<int>(expectedHeaderOneType, static_cast<int>(tokens[0].headerType));
+        TestSystem::AssertAreEqual<u64>(expectedHeaderTwoLineNumber, tokens[1].lineNumber);
+        TestSystem::AssertStringsAreEqual(expectedHeaderTwoFileName, tokens[1].fileName);
+        TestSystem::AssertAreEqual<int>(expectedHeaderTwoType, static_cast<int>(tokens[1].headerType));
     }
 
     void TestHeaderIncludeExpander_GetTokensFromFile_FoundExternalTokens_TokensAreCorrect() {
@@ -90,10 +89,10 @@ namespace CodEXpander::Tests {
         const string filePath = "./res/header_file_with_external_header.h";
         vector<HeaderToken> tokens = GetTokensFromFile(filePath);
 
-        AssertAreEqual<u64>(expectedHeaderTokenCount, tokens.size());
-        AssertAreEqual<u64>(expectedHeaderLineNumber, tokens[0].lineNumber);
-        AssertStringsAreEqual(expectedHeaderFileName, tokens[0].fileName);
-        AssertAreEqual<int>(expectedHeaderType, static_cast<int>(tokens[0].headerType));
+        TestSystem::AssertAreEqual<u64>(expectedHeaderTokenCount, tokens.size());
+        TestSystem::AssertAreEqual<u64>(expectedHeaderLineNumber, tokens[0].lineNumber);
+        TestSystem::AssertStringsAreEqual(expectedHeaderFileName, tokens[0].fileName);
+        TestSystem::AssertAreEqual<int>(expectedHeaderType, static_cast<int>(tokens[0].headerType));
     }
 
     void TestHeaderIncludeExpander_GetTokensFromFile_HeaderFileNotExists_GetHeaderContent_EmptyResult() {
@@ -104,7 +103,7 @@ namespace CodEXpander::Tests {
         vector<HeaderToken> tokens = GetTokensFromFile(filePath);
         const vector<string> headerContent = GetHeaderContent(tokens[0].fileName, workingDirectory);
 
-        AssertAreEqual<u64>(expectedHeaderContentSize, headerContent.size());        
+        TestSystem::AssertAreEqual<u64>(expectedHeaderContentSize, headerContent.size());        
     }
 
     void TestHeaderIncludeExpander_ExpandHeaderIncludes_NoInlcudes_FileContentIsEqual() {
@@ -120,12 +119,12 @@ namespace CodEXpander::Tests {
         const vector<HeaderToken> includeHeaders = GetTokensFromFile(filePath);
         vector<string> fileContent = ReadFileByLines(filePath);
       
-        AssertAreEqual<u64>(expectedTokensCount, includeHeaders.size());
-        AssertAreEqual<u64>(expectedFileContent.size(), fileContent.size());
+        TestSystem::AssertAreEqual<u64>(expectedTokensCount, includeHeaders.size());
+        TestSystem::AssertAreEqual<u64>(expectedFileContent.size(), fileContent.size());
 
         for (u64 i = 0; i < fileContent.size(); i++) {
             const auto currentLine = fileContent[i];
-            AssertStringsAreEqual(expectedFileContent[i], currentLine);
+            TestSystem::AssertStringsAreEqual(expectedFileContent[i], currentLine);
         }
     }
 
@@ -154,11 +153,11 @@ namespace CodEXpander::Tests {
         HeaderDependencyGraph dependencyGraph(filePath, workingDirectory);
         vector<string> sortedHeaderFileIncludes = dependencyGraph.GetHeaderFilesSortedByOccurences();
         vector<string> expandedSourceFile = ExpandHeaderIncludes(filePath, sortedHeaderFileIncludes, workingDirectory);
-        AssertAreEqual<u64>(expectedFileContent.size(), expandedSourceFile.size());
+        TestSystem::AssertAreEqual<u64>(expectedFileContent.size(), expandedSourceFile.size());
 
         for (u64 i = 0; i < expandedSourceFile.size(); i++) {
             const auto currentLine = expandedSourceFile[i];
-            AssertStringsAreEqual(expectedFileContent[i], currentLine);
+            TestSystem::AssertStringsAreEqual(expectedFileContent[i], currentLine);
         }
     }
 }

@@ -8,27 +8,32 @@ using std::string, std::vector, std::to_string, std::chrono::steady_clock, std::
 using namespace CodEXpander::Core;
 
 namespace CodEXpander::Tests {
+    template void TestSystem::AssertAreEqual(u64 expectedValue, u64 actualValue);
+    template void TestSystem::AssertAreEqual(int expectedValue, int actualValue);
+    template void TestSystem::AssertAreEqual(bool expectedValue, bool actualValue);
+
     string GetElapsedTimeInSeconds(const steady_clock::time_point &start, const steady_clock::time_point &end);
 
-    TestMethod CreateTestMethod(const string name, void (*callback)()) {
-        TestMethod testmethod = {
-            .testName = std::move(name),
-            .callback = callback
-        };
-
-        return testmethod;
+    void TestSystem::AddTests(const std::vector<TestMethod> &tests) {
+        for (auto &test : tests)
+            AddTest(test);
     }
 
-    void RunTests(const vector<TestMethod> &tests) {
+    void TestSystem::AddTest(const TestMethod &test) {
+        registeredTests.emplace_back(std::move(test));
+    }
+
+    void TestSystem::RunTests() {
         vector<TestMethod> failedTests;
-        vector<TestMethod> passedTests; 
+        vector<TestMethod> passedTests;
+
         Logger logger;
         logger.PrintMessage("Running tests: ", Color().Green());
         logger.PrintLineInfoMessage(to_string(registeredTests.size()));
         logger.PrintLineMessage("========================================================", Color().White());
 
         const auto testsStartTime = steady_clock::now();
-        for (const auto& test : tests) {
+        for (const auto& test : registeredTests) {
             logger.PrintMessage(string(">> "), Color().White());
             logger.PrintMessage(test.testName, Color().Cyan());
             logger.PrintLineMessage(string(":"), Color().White());
@@ -71,10 +76,27 @@ namespace CodEXpander::Tests {
         logger.PrintLineMessage("", Color().White());
     }
 
-    void AssertStringsAreEqual(const std::string &expectedValue, const std::string &actualValue) {
+    void TestSystem::AssertStringsAreEqual(const std::string &expectedValue, const std::string &actualValue) {
         if (expectedValue != actualValue) {
             std::string message = std::string("Assertion failed:") + std::string("\n\t\t\texpected value: ")
                 + expectedValue + std::string("\n\t\t\tactual value: \t") + actualValue;
+
+            throw AssertionException(message);
+        }
+    }
+    
+    TestMethod TestSystem::CreateTestMethod(const std::string name, void (*callback)()) {
+        return TestMethod {
+            .testName = std::move(name),
+            .callback = callback
+        };       
+    }
+
+    template<typename T> void TestSystem::AssertAreEqual(T expectedValue, T actualValue) {
+        auto valueMatches = expectedValue == actualValue;
+        if (!valueMatches) {
+            std::string message = std::string("Assertion failed:") + std::string("\n\t\t\texpected value: ")
+                + std::to_string(expectedValue) + std::string("\n\t\t\tactual value: \t") + std::to_string(actualValue);
 
             throw AssertionException(message);
         }

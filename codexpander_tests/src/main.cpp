@@ -9,17 +9,20 @@ using std::vector;
 
 vector<TestMethod> GetAllTests();
 
-#define CreateNamedTestMethod(testMethodName) CreateTestMethod(#testMethodName, testMethodName)
+#define CreateNamedTestMethod(testMethodName) TestSystem::CreateTestMethod(#testMethodName, testMethodName)
 
 int main(int argumentCount, char* arguments[]) {
     const vector<TestMethod> allTests = GetAllTests();
-    RunTests(std::move(allTests));
+    
+    TestSystem testSystem;
+    testSystem.AddTests(allTests);
+    testSystem.RunTests();
 
     return 0;
 }
 
 vector<TestMethod> GetAllTests() {
-    const vector<TestMethod> tests = {
+    return vector<TestMethod> {
         CreateNamedTestMethod(TestFileManager_ReadFilesByLines_NotExistingFile_EmptyContent),
         CreateNamedTestMethod(TestFileManager_ReadFilesByLines_ExistingFile_ContentIsCorrect),
         CreateNamedTestMethod(TestFileManager_TryWriteToFile_NoFilePath_NotWritingToFile),
@@ -47,6 +50,4 @@ vector<TestMethod> GetAllTests() {
         CreateNamedTestMethod(TestCommandParser_TryGetExistingArgument_NameIsValid_ArgumentDoesExist_ReturnsArgument),
         CreateNamedTestMethod(TestCommandParser_TryGetExistingArgument_ArgumentDoesExist_ValueIsEmpty_ReturnsFalse)
     };
-
-    return std::move(tests);
 }
