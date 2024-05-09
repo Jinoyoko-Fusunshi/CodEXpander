@@ -36,8 +36,8 @@ namespace CodEXpander::Tests {
 
         auto argument = arguments[0];
         TestSystem::AssertAreEqual(expectedArgumentCount, argumentCount);
-        TestSystem::AssertStringsAreEqual("test_argument", argument.name);
-        TestSystem::AssertStringsAreEqual("test", argument.value);
+        TestSystem::AssertStringsAreEqual("test_argument", argument.GetName());
+        TestSystem::AssertStringsAreEqual("test", argument.GetValue());
     }
 
     void TestCommandParser_ParseArguments_TwoArgumentsPresent_ReturnsTwoArguments() {
@@ -50,20 +50,20 @@ namespace CodEXpander::Tests {
         auto first_argument = arguments[0];
         auto second_argument = arguments[1];
         TestSystem::AssertAreEqual(expectedArgumentCount, argumentCount);
-        TestSystem::AssertStringsAreEqual("first_argument", first_argument.name);
-        TestSystem::AssertStringsAreEqual("first", first_argument.value);
-        TestSystem::AssertStringsAreEqual("second_argument", second_argument.name);
-        TestSystem::AssertStringsAreEqual("second", second_argument.value);
+        TestSystem::AssertStringsAreEqual("first_argument", first_argument.GetName());
+        TestSystem::AssertStringsAreEqual("first", first_argument.GetValue());
+        TestSystem::AssertStringsAreEqual("second_argument", second_argument.GetName());
+        TestSystem::AssertStringsAreEqual("second", second_argument.GetValue());
     }
 
     void TestCommandParser_TryGetExistingArgument_NameIsEmpty_ReturnsFalse() {
         const bool expectedResult = false;
         vector<Argument> existingArguments = {
-            { .name="first_argument", .value="first" }
+            Argument("first_argument", "first")
         };
 
         Argument foundArgument;
-        auto result = TryGetExistingArgument(existingArguments, "", foundArgument);
+        auto result = TryGetArgument(existingArguments, "", foundArgument);
 
         TestSystem::AssertAreEqual<bool>(expectedResult, result);
     }
@@ -71,11 +71,11 @@ namespace CodEXpander::Tests {
     void TestCommandParser_TryGetExistingArgument_NameIsValid_ArgumentDoesNotExist_ReturnsFalse() {
         const bool expectedResult = false;
         vector<Argument> existingArguments = {
-            { .name="first_argument", .value="first" }
+            Argument("first_argument", "first")
         };
 
         Argument foundArgument;
-        auto result = TryGetExistingArgument(existingArguments, "test_argument", foundArgument);
+        auto result = TryGetArgument(existingArguments, "test_argument", foundArgument);
 
         TestSystem::AssertAreEqual<bool>(expectedResult, result);
     }
@@ -85,15 +85,15 @@ namespace CodEXpander::Tests {
         const string expectedName = "first_argument";
         const string expectedValue = "first";
         vector<Argument> existingArguments = {
-            { .name="first_argument", .value="first" }
+            Argument("first_argument", "first")
         };
 
         Argument foundArgument;
-        auto result = TryGetExistingArgument(existingArguments, "first_argument", foundArgument);
+        auto result = TryGetArgument(existingArguments, "first_argument", foundArgument);
 
         TestSystem::AssertAreEqual<bool>(expectedResult, result);
-        TestSystem::AssertStringsAreEqual(expectedName, foundArgument.name);
-        TestSystem::AssertStringsAreEqual(expectedValue, foundArgument.value);
+        TestSystem::AssertStringsAreEqual(expectedName, foundArgument.GetName());
+        TestSystem::AssertStringsAreEqual(expectedValue, foundArgument.GetValue());
     }
 
     void TestCommandParser_TryGetExistingArgument_ArgumentDoesExist_ValueIsEmpty_ReturnsFalse() {
@@ -101,11 +101,11 @@ namespace CodEXpander::Tests {
         const string expectedName = "first_argument";
         const string expectedValue = "first";
         vector<Argument> existingArguments = {
-            { .name="first_argument", .value="" }
+            Argument("first_argument")
         };
 
         Argument foundArgument;
-        auto result = TryGetExistingArgument(existingArguments, "first_argument", foundArgument);
+        auto result = TryGetArgumentWithValue(existingArguments, "first_argument", foundArgument);
 
         TestSystem::AssertAreEqual<bool>(expectedResult, result);
     }

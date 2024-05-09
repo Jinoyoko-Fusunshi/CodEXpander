@@ -6,22 +6,35 @@
 using std::vector, std::string, std::find, std::views::filter, std::distance;
 
 namespace CodEXpander::Core {
+    Argument::Argument(std::string name, std::string value) {
+        this->name = name;
+        this->value = value;
+    }
+
+    const std::string& Argument::GetName() {
+        return name;
+    }
+
+    const std::string& Argument::GetValue() {
+        return value;
+    }
+
+    bool Argument::HasValue() {
+        return value.compare("") != 0;
+    }
+
     vector<Argument> ParseArguments(const int argument_count, const vector<string> &arguments) {
         vector<Argument> parsedArguments;
         for (auto i = 0; i < argument_count; i++) {
             const string parameter(arguments[i]);
-            Argument parsedArgument;
-
-            if (!TryGetArgument(parameter, parsedArgument))
-                continue;
-
-            parsedArguments.emplace_back(parsedArgument);
+            if (Argument parsedArgument; TryParseArgument(parameter, parsedArgument))
+                parsedArguments.emplace_back(parsedArgument);
         }
 
         return std::move(parsedArguments);
     }
 
-    bool TryGetArgument(const string &argumentString, Argument &argument) {
+    bool TryParseArgument(const string &argumentString, Argument &argument) {
         const u64 argumentPrefixLength = 2;
         const u64 argumentLength = argumentString.size();
         if (argumentLength <= argumentPrefixLength)
@@ -35,28 +48,46 @@ namespace CodEXpander::Core {
 
         const c8 valueAssignmentOperator = '=';
         const u64 assingmentIndex = argumentString.find(valueAssignmentOperator);
-        if (assingmentIndex == string::npos)
+        const bool hasValue = assingmentIndex != string::npos;
+
+        const u64 argumentNameStartIndex = argumentPrefixLength;
+        const u64 argumentNameEndIndex = hasValue ? assingmentIndex : argumentString.size();
+        const u64 argumentNameLength = argumentNameEndIndex - argumentNameStartIndex;
+        if (argumentNameLength == 0)
             return false;
 
-        const u64 argumentNameLength = assingmentIndex - argumentPrefixLength;
-        if (argumentLength == 0)
-            return false;
-
-        const string argumentName = argumentString.substr(argumentPrefixLength, argumentNameLength);
+        const string argumentName = argumentString.substr(argumentNameStartIndex, argumentNameLength);
+        if (!hasValue) {
+            argument = Argument(std::move(argumentName));
+            return true;
+        }
+        
         const u64 argumentValueLength = argumentString.size() - assingmentIndex;
-        if (argumentValueLength == 0)
-            return false;
+        if (argumentValueLength == 0) {
+            argument = Argument(std::move(argumentName));
+            return true;
+        }
 
         const string argumentValue = argumentString.substr(assingmentIndex + 1, argumentValueLength);
-        argument.name = std::move(argumentName);
-        argument.value = std::move(argumentValue);
+        argument = Argument(std::move(argumentName), std::move(argumentValue));
 
         return true;
     }
 
-    bool TryGetExistingArgument(const vector<Argument> &arguments, const string &name, Argument &foundArgument) {
-        const auto findElementByName = [name](const Argument &arg) {
-            return arg.name.compare(name) == 0;
+    bool TryGetArgumentWithValue(const vector<Argument> &arguments, const string &name, Argument &foundArgument) {
+        auto argumentExists = TryGetArgument(arguments, name, foundArgument);
+        if (!argumentExists)
+            return false;
+        
+        if (!foundArgument.HasValue() || foundArgument.GetValue().compare("") == 0)
+            return false;
+
+        return true;
+    }
+
+    bool TryGetArgument(const vector<Argument> &arguments, const string &name, Argument &foundArgument) {
+        const auto findElementByName = [name](Argument argument) {
+            return argument.GetName().compare(name) == 0;
         };
 
         auto filteredArguments = arguments | filter(findElementByName);
@@ -65,8 +96,8 @@ namespace CodEXpander::Core {
             return false;
 
         const vector<Argument> foundArguments(filteredArguments.begin(), filteredArguments.end());
-        const Argument argument = foundArguments[0];
-        if (argument.value.compare("") == 0)
+        Argument argument = foundArguments[0];
+        if (argument.GetName().compare("") == 0)
             return false;
         
         foundArgument = argument;
