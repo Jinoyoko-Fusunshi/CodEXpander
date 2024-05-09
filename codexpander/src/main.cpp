@@ -18,27 +18,21 @@ void WriteExpandedContentToFile(const string &sourceFile, string &outputFile, st
 
 int main(int argumentCount, c8 *rawArguments[]) {
     Logger logger;
+    CommandParser commandParser(argumentCount, rawArguments);
 
-    vector<string> arguments;
-    for (u64 i = 0; i < argumentCount; i++) {
-        string argument(rawArguments[i]);
-        arguments.emplace_back(argument);
-    }
-
-    auto parsedArguments = ParseArguments(argumentCount, arguments);
-    if (Argument helpArgument; TryGetArgument(parsedArguments, "help", helpArgument)) {
+    if (Argument helpArgument; commandParser.TryGetArgument("help", helpArgument)) {
         DisplayHelpPage(logger);
     }
 
-    if (Argument sourceArgument; TryGetArgumentWithValue(parsedArguments, "source_file", sourceArgument)) {
+    if (Argument sourceArgument; commandParser.TryGetArgumentWithValue("source_file", sourceArgument)) {
         const string sourceFile = sourceArgument.GetValue();
         string workingDirectory = "./";
         string outputFile = "./temp_extended_filename.cpp";
         
-        if (Argument outputFileArgument; TryGetArgument(parsedArguments, "output_file", outputFileArgument))
+        if (Argument outputFileArgument; commandParser.TryGetArgument("output_file", outputFileArgument))
             outputFile = outputFileArgument.GetValue();
 
-        if (Argument workingDirArgument; TryGetArgument(parsedArguments, "working_dir", workingDirArgument))
+        if (Argument workingDirArgument; commandParser.TryGetArgument("working_dir", workingDirArgument))
             workingDirectory = workingDirArgument.GetValue();
 
         WriteExpandedContentToFile(sourceFile, outputFile, workingDirectory);

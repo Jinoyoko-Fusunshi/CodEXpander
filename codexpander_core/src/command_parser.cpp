@@ -6,35 +6,20 @@
 using std::vector, std::string, std::find, std::views::filter, std::distance;
 
 namespace CodEXpander::Core {
-    Argument::Argument(std::string name, std::string value) {
-        this->name = name;
-        this->value = value;
+    CommandParser::CommandParser(int argumentCount, c8 *rawArguments[]) {
+        vector<string> stringArguments;
+        
+        for (auto i = 0; i < argumentCount; i++)
+            stringArguments.emplace_back(rawArguments[i]);
+
+        ParseArguments(stringArguments);
     }
 
-    const std::string& Argument::GetName() {
-        return name;
+    CommandParser::CommandParser(vector<string> rawArguments) {
+        ParseArguments(rawArguments);
     }
 
-    const std::string& Argument::GetValue() {
-        return value;
-    }
-
-    bool Argument::HasValue() {
-        return value.compare("") != 0;
-    }
-
-    vector<Argument> ParseArguments(const int argument_count, const vector<string> &arguments) {
-        vector<Argument> parsedArguments;
-        for (auto i = 0; i < argument_count; i++) {
-            const string parameter(arguments[i]);
-            if (Argument parsedArgument; TryParseArgument(parameter, parsedArgument))
-                parsedArguments.emplace_back(parsedArgument);
-        }
-
-        return std::move(parsedArguments);
-    }
-
-    bool TryParseArgument(const string &argumentString, Argument &argument) {
+    bool CommandParser::TryParseArgument(const string &argumentString, Argument &argument) {
         const u64 argumentPrefixLength = 2;
         const u64 argumentLength = argumentString.size();
         if (argumentLength <= argumentPrefixLength)
@@ -74,8 +59,8 @@ namespace CodEXpander::Core {
         return true;
     }
 
-    bool TryGetArgumentWithValue(const vector<Argument> &arguments, const string &name, Argument &foundArgument) {
-        auto argumentExists = TryGetArgument(arguments, name, foundArgument);
+    bool CommandParser::TryGetArgumentWithValue(const string &name, Argument &foundArgument) {
+        auto argumentExists = TryGetArgument(name, foundArgument);
         if (!argumentExists)
             return false;
         
@@ -85,12 +70,12 @@ namespace CodEXpander::Core {
         return true;
     }
 
-    bool TryGetArgument(const vector<Argument> &arguments, const string &name, Argument &foundArgument) {
+    bool CommandParser::TryGetArgument(const string &name, Argument &foundArgument) {
         const auto findElementByName = [name](Argument argument) {
             return argument.GetName().compare(name) == 0;
         };
 
-        auto filteredArguments = arguments | filter(findElementByName);
+        auto filteredArguments = parsedArguments | filter(findElementByName);
         const auto size = distance(filteredArguments.begin(), filteredArguments.end());
         if (size == 0)
             return false;
@@ -102,5 +87,17 @@ namespace CodEXpander::Core {
         
         foundArgument = argument;
         return true;
+    }
+
+    const u64 CommandParser::GetArgumentCount() {
+        return parsedArguments.size();
+    }
+
+    void CommandParser::ParseArguments(vector<string> rawArguments) {
+        for (auto i = 0; i < rawArguments.size(); i++) {
+            const string parameter(rawArguments[i]);
+            if (Argument parsedArgument; TryParseArgument(parameter, parsedArgument))
+                parsedArguments.emplace_back(parsedArgument);
+        }
     }
 }

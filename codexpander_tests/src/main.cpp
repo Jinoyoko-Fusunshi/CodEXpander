@@ -42,12 +42,10 @@ vector<TestMethod> GetAllTests() {
 
         CreateNamedTestMethod(TestCommandParser_ParseArguments_StringIsEmpty_NoArguments),
         CreateNamedTestMethod(TestCommandParser_ParseArguments_ArgumentWithOnePrexifSymbol_ReturnsNoArguments),
-        CreateNamedTestMethod(TestCommandParser_ParseArguments_ArgumentWithBothPrefixSymbol_ReturnsOneArgument),
-        CreateNamedTestMethod(TestCommandParser_ParseArguments_TwoArgumentsPresent_ReturnsTwoArguments),
-
-        CreateNamedTestMethod(TestCommandParser_TryGetExistingArgument_NameIsEmpty_ReturnsFalse),
-        CreateNamedTestMethod(TestCommandParser_TryGetExistingArgument_NameIsValid_ArgumentDoesNotExist_ReturnsFalse),
-        CreateNamedTestMethod(TestCommandParser_TryGetExistingArgument_NameIsValid_ArgumentDoesExist_ReturnsArgument),
-        CreateNamedTestMethod(TestCommandParser_TryGetExistingArgument_ArgumentDoesExist_ValueIsEmpty_ReturnsFalse)
+        CreateNamedTestMethod(TestCommandParser_TryGetArgument_NameIsEmpty_ReturnsFalse),
+        CreateNamedTestMethod(TestCommandParser_TryGetArgument_NameIsValid_ArgumentDoesNotExist_ReturnsFalse),
+        CreateNamedTestMethod(TestCommandParser_TryGetArgumentWithValue_ArgumentWithBothPrefixSymbol_ReturnsOneArgument),
+        CreateNamedTestMethod(TestCommandParser_TryGetArgumentWithValue_TwoArgumentsPresent_ReturnsTwoArguments),
+        CreateNamedTestMethod(TestCommandParser_TryGetArgumentWithValue_ArgumentHasNoValue_ReturnsArgumentHasNoValue)
     };
 }

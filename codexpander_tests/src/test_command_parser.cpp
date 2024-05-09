@@ -9,104 +9,92 @@ using std::string, std::vector;
 namespace CodEXpander::Tests {
     void TestCommandParser_ParseArguments_StringIsEmpty_NoArguments() {
         const u64 expectedArgumentCount = 0;   
-        vector<string> command = {""};
+        vector<string> commands = {""};
         
-        auto arguments = ParseArguments(0, command);
-        u64 argumentCount = arguments.size();
+        CommandParser commandParser(commands);
+        u64 argumentCount = commandParser.GetArgumentCount();
 
         TestSystem::AssertAreEqual<u64>(expectedArgumentCount, argumentCount);
     }
 
     void TestCommandParser_ParseArguments_ArgumentWithOnePrexifSymbol_ReturnsNoArguments() {
         const u64 expectedArgumentCount = 0;     
-        vector<string> command = {"command", "-test_argument=test"};
+        vector<string> commands = {"command", "-test_argument=test"};
 
-        auto arguments = ParseArguments(2, command);
-        u64 argumentCount = arguments.size();
+        CommandParser commandParser(commands);
+        u64 argumentCount = commandParser.GetArgumentCount();
 
         TestSystem::AssertAreEqual(expectedArgumentCount, argumentCount);
     }
 
-    void TestCommandParser_ParseArguments_ArgumentWithBothPrefixSymbol_ReturnsOneArgument() {
+    void TestCommandParser_TryGetArgument_NameIsEmpty_ReturnsFalse() {
+        const bool expectedResult = false;
+        vector<string> commands = {"--first_argument=first"};
+
+        CommandParser commandParser(commands);
+        Argument foundArgument;
+        auto result = commandParser.TryGetArgument("", foundArgument);
+
+        TestSystem::AssertAreEqual<bool>(expectedResult, result);
+    }
+
+    void TestCommandParser_TryGetArgument_NameIsValid_ArgumentDoesNotExist_ReturnsFalse() {
+        const bool expectedResult = false;
+        vector<string> commands = {"--first_argument=first"};
+
+        CommandParser commandParser(commands);
+        Argument foundArgument;
+        auto result = commandParser.TryGetArgument("test_argument", foundArgument);
+
+        TestSystem::AssertAreEqual<bool>(expectedResult, result);
+    }
+
+    void TestCommandParser_TryGetArgumentWithValue_ArgumentWithBothPrefixSymbol_ReturnsOneArgument() {
         const u64 expectedArgumentCount = 1;
-        vector<string> command = {"command", "--test_argument=test"};
+        const bool expectedArgumentResult = true;
+        vector<string> commands = {"command", "--test_argument=test"};
 
-        auto arguments = ParseArguments(2, command);
-        u64 argumentCount = arguments.size();
+        CommandParser commandParser(commands);
+        Argument argument; 
+        auto foundArgument = commandParser.TryGetArgumentWithValue("test_argument", argument);
 
-        auto argument = arguments[0];
-        TestSystem::AssertAreEqual(expectedArgumentCount, argumentCount);
+        TestSystem::AssertAreEqual(expectedArgumentResult, true);
         TestSystem::AssertStringsAreEqual("test_argument", argument.GetName());
         TestSystem::AssertStringsAreEqual("test", argument.GetValue());
     }
 
-    void TestCommandParser_ParseArguments_TwoArgumentsPresent_ReturnsTwoArguments() {
+    void TestCommandParser_TryGetArgumentWithValue_TwoArgumentsPresent_ReturnsTwoArguments() {
         const u64 expectedArgumentCount = 2;
-        vector<string> command = {"command", "--first_argument=first", "--second_argument=second"};
+        vector<string> commands = {"command", "--first_argument=first", "--second_argument=second"};
 
-        auto arguments = ParseArguments(3, command);
-        u64 argumentCount = arguments.size();
+        CommandParser commandParser(commands);
+        u64 argumentCount = commandParser.GetArgumentCount();
 
-        auto first_argument = arguments[0];
-        auto second_argument = arguments[1];
         TestSystem::AssertAreEqual(expectedArgumentCount, argumentCount);
-        TestSystem::AssertStringsAreEqual("first_argument", first_argument.GetName());
-        TestSystem::AssertStringsAreEqual("first", first_argument.GetValue());
-        TestSystem::AssertStringsAreEqual("second_argument", second_argument.GetName());
-        TestSystem::AssertStringsAreEqual("second", second_argument.GetValue());
+
+        const auto firstArgumentName = "first_argument";
+        Argument firstArgument;
+        commandParser.TryGetArgumentWithValue(firstArgumentName, firstArgument);
+        TestSystem::AssertStringsAreEqual(firstArgumentName, firstArgument.GetName());
+        TestSystem::AssertStringsAreEqual("first", firstArgument.GetValue());
+
+        const auto secondArgumentName = "second_argument";
+        Argument secondArgument;
+        commandParser.TryGetArgumentWithValue(secondArgumentName, secondArgument);
+        TestSystem::AssertStringsAreEqual(secondArgumentName, secondArgument.GetName());
+        TestSystem::AssertStringsAreEqual("second", secondArgument.GetValue());
     }
 
-    void TestCommandParser_TryGetExistingArgument_NameIsEmpty_ReturnsFalse() {
+    void TestCommandParser_TryGetArgumentWithValue_ArgumentHasNoValue_ReturnsArgumentHasNoValue() {
         const bool expectedResult = false;
-        vector<Argument> existingArguments = {
-            Argument("first_argument", "first")
-        };
-
-        Argument foundArgument;
-        auto result = TryGetArgument(existingArguments, "", foundArgument);
-
-        TestSystem::AssertAreEqual<bool>(expectedResult, result);
-    }
-
-    void TestCommandParser_TryGetExistingArgument_NameIsValid_ArgumentDoesNotExist_ReturnsFalse() {
-        const bool expectedResult = false;
-        vector<Argument> existingArguments = {
-            Argument("first_argument", "first")
-        };
-
-        Argument foundArgument;
-        auto result = TryGetArgument(existingArguments, "test_argument", foundArgument);
-
-        TestSystem::AssertAreEqual<bool>(expectedResult, result);
-    }
-
-    void TestCommandParser_TryGetExistingArgument_NameIsValid_ArgumentDoesExist_ReturnsArgument() {
-        const bool expectedResult = true;
         const string expectedName = "first_argument";
-        const string expectedValue = "first";
-        vector<Argument> existingArguments = {
-            Argument("first_argument", "first")
-        };
+        vector<string> commands = {"--first_argument"};
 
+        CommandParser commandParser(commands);
         Argument foundArgument;
-        auto result = TryGetArgument(existingArguments, "first_argument", foundArgument);
+        auto result = commandParser.TryGetArgumentWithValue("first_argument", foundArgument);
 
         TestSystem::AssertAreEqual<bool>(expectedResult, result);
         TestSystem::AssertStringsAreEqual(expectedName, foundArgument.GetName());
-        TestSystem::AssertStringsAreEqual(expectedValue, foundArgument.GetValue());
-    }
-
-    void TestCommandParser_TryGetExistingArgument_ArgumentDoesExist_ValueIsEmpty_ReturnsFalse() {
-        const bool expectedResult = false;
-        const string expectedName = "first_argument";
-        const string expectedValue = "first";
-        vector<Argument> existingArguments = {
-            Argument("first_argument")
-        };
-
-        Argument foundArgument;
-        auto result = TryGetArgumentWithValue(existingArguments, "first_argument", foundArgument);
-
-        TestSystem::AssertAreEqual<bool>(expectedResult, result);
     }
 }

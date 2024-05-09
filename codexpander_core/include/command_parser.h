@@ -2,25 +2,25 @@
 
 #include <string>
 #include <vector>
+#include "declarations.h"
+#include "argument.h"
 
 namespace CodEXpander::Core {
-    class Argument final {
+    class CommandParser final {
     private:
-        std::string name;
-        std::string value;
+        std::vector<Argument> parsedArguments;
+
+        void ParseArguments(std::vector<std::string> rawArguments);
 
     public:
-        Argument() = default;
-        explicit Argument(std::string name, std::string value = "");
-        ~Argument() = default;
+        CommandParser() = default;
+        explicit CommandParser(int argumentCount, c8 *rawArguments[]);
+        explicit CommandParser(std::vector<std::string> rawArguments);
+        ~CommandParser() = default;
 
-        const std::string& GetName();
-        const std::string& GetValue();
-        bool HasValue();
+        bool TryParseArgument(const std::string &argumentString, Argument &argument);
+        bool TryGetArgumentWithValue(const std::string &name, Argument &foundArgument);
+        bool TryGetArgument(const std::string &name, Argument &foundArgument);    
+        const u64 GetArgumentCount();
     };
-
-    std::vector<Argument> ParseArguments(const int argument_count, const std::vector<std::string> &arguments);
-    bool TryParseArgument(const std::string &argumentString, Argument &argument);
-    bool TryGetArgumentWithValue(const std::vector<Argument> &arguments, const std::string &name, Argument &foundArgument);
-    bool TryGetArgument(const std::vector<Argument> &arguments, const std::string &name, Argument &foundArgument);
 }
