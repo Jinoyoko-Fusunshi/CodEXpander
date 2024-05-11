@@ -4,23 +4,22 @@
 #include <vector>
 #include "declarations.h"
 #include "argument.h"
+#include "command.h"
 
 namespace CodEXpander::Core {
     class CommandParser final {
     private:
-        std::vector<Argument> parsedArguments;
+        std::vector<Command*> availableCommands {};
 
-        void ParseArguments(std::vector<std::string> rawArguments);
+        static bool IsCommand(const std::string &name);
+        static std::vector<Argument> GetParsedArguments(const std::vector<std::string> &rawArguments);
+        static bool TryParseArgument(const std::string &argumentString, Argument &argument);
 
     public:
-        CommandParser() = default;
-        explicit CommandParser(int argumentCount, c8 *rawArguments[]);
-        explicit CommandParser(std::vector<std::string> rawArguments);
+        explicit CommandParser(std::vector<Command*> commands);
         ~CommandParser() = default;
 
-        bool TryParseArgument(const std::string &argumentString, Argument &argument);
-        bool TryGetArgumentWithValue(const std::string &name, Argument &foundArgument);
-        bool TryGetArgument(const std::string &name, Argument &foundArgument);    
-        const u64 GetArgumentCount();
+        bool TryParseCommand(int argumentCount, c8 *rawArguments[], Command* &foundCommand);
+        bool TryParseCommand(const std::vector<std::string> &rawArguments, Command* &foundCommand);
     };
 }

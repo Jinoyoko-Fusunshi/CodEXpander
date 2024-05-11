@@ -6,17 +6,58 @@
 using std::vector, std::string, std::find, std::views::filter, std::distance;
 
 namespace CodEXpander::Core {
-    CommandParser::CommandParser(int argumentCount, c8 *rawArguments[]) {
+    CommandParser::CommandParser(vector<Command*> commands) : availableCommands(commands) {}
+
+    bool CommandParser::TryParseCommand(int argumentCount, c8 *rawArguments[], Command* &foundCommand) {
         vector<string> stringArguments;
-        
         for (auto i = 0; i < argumentCount; i++)
             stringArguments.emplace_back(rawArguments[i]);
 
-        ParseArguments(stringArguments);
+        return TryParseCommand(stringArguments, foundCommand);
     }
 
-    CommandParser::CommandParser(vector<string> rawArguments) {
-        ParseArguments(rawArguments);
+    bool CommandParser::TryParseCommand(const vector<string> &rawArguments, Command* &foundCommand) {
+        const u64 argumentStartIndex = 1;
+        vector<Command*> foundCommands;
+        for (auto i = argumentStartIndex; i < rawArguments.size(); i++) {
+            const string argument = rawArguments[i];
+            if (!IsCommand(argument))
+                continue;
+            
+            for (const auto &command : availableCommands) {
+                if (command->GetName().compare(argument) == 0)
+                    foundCommands.emplace_back(command);
+            }
+        }
+
+        const u64 requiredCommandAmount = 1;
+        if (foundCommands.size() != requiredCommandAmount)
+            return false;
+
+        const auto arguments = GetParsedArguments(std::move(rawArguments));
+        foundCommand = *foundCommands.begin();
+        foundCommand->SetProvidedArguments(std::move(arguments));
+        return true;
+    }
+
+    bool CommandParser::IsCommand(const std::string &name) {
+        for (auto character : name) {
+            if (!std::isalpha(character))
+                return false;
+        }
+        
+        return true;
+    }
+
+    vector<Argument> CommandParser::GetParsedArguments(const vector<string> &rawArguments) {
+        vector<Argument> parsedArguments;
+        for (auto i = 0; i < rawArguments.size(); i++) {
+            const string parameter(rawArguments[i]);
+            if (Argument parsedArgument; TryParseArgument(parameter, parsedArgument))
+                parsedArguments.emplace_back(parsedArgument);
+        }
+
+        return std::move(parsedArguments);
     }
 
     bool CommandParser::TryParseArgument(const string &argumentString, Argument &argument) {
@@ -57,47 +98,5 @@ namespace CodEXpander::Core {
         argument = Argument(std::move(argumentName), std::move(argumentValue));
 
         return true;
-    }
-
-    bool CommandParser::TryGetArgumentWithValue(const string &name, Argument &foundArgument) {
-        auto argumentExists = TryGetArgument(name, foundArgument);
-        if (!argumentExists)
-            return false;
-        
-        if (!foundArgument.HasValue() || foundArgument.GetValue().compare("") == 0)
-            return false;
-
-        return true;
-    }
-
-    bool CommandParser::TryGetArgument(const string &name, Argument &foundArgument) {
-        const auto findElementByName = [name](Argument argument) {
-            return argument.GetName().compare(name) == 0;
-        };
-
-        auto filteredArguments = parsedArguments | filter(findElementByName);
-        const auto size = distance(filteredArguments.begin(), filteredArguments.end());
-        if (size == 0)
-            return false;
-
-        const vector<Argument> foundArguments(filteredArguments.begin(), filteredArguments.end());
-        Argument argument = foundArguments[0];
-        if (argument.GetName().compare("") == 0)
-            return false;
-        
-        foundArgument = argument;
-        return true;
-    }
-
-    const u64 CommandParser::GetArgumentCount() {
-        return parsedArguments.size();
-    }
-
-    void CommandParser::ParseArguments(vector<string> rawArguments) {
-        for (auto i = 0; i < rawArguments.size(); i++) {
-            const string parameter(rawArguments[i]);
-            if (Argument parsedArgument; TryParseArgument(parameter, parsedArgument))
-                parsedArguments.emplace_back(parsedArgument);
-        }
     }
 }
