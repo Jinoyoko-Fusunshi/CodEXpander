@@ -8,7 +8,9 @@ CC = g++ -std=c++20
 debug_build:
 	$(eval CC=g++ -std=c++20 -g)
 
-build: all_core_release all_codexpander_release
+test: run_tests
+
+build: all_tests_release all_codexpander_release
 
 install:
 	cp ./codexpander/bin/codexpander /usr/bin
@@ -58,13 +60,10 @@ test_object_files = $(patsubst $(test_source_dir)/%.cpp, $(test_object_dir)/%.o,
 
 
 # codexpander test targets
-run_tests: all_tests
-	$(test_bin_dir)/codexpander_tests
+run_tests:
+	cd $(test_bin_dir); ./codexpander_tests
 
 all_tests: all_core clean_tests debug_build build_tests copy_resources_tests
-
-run_tests_release: all_tests_release
-	$(test_bin_dir)/codexpander_tests
 
 all_tests_release: all_core_release clean_tests build_tests copy_resources_tests
 

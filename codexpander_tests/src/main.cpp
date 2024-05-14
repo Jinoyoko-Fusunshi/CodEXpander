@@ -16,9 +16,8 @@ int main(int argumentCount, char* arguments[]) {
     
     TestSystem testSystem;
     testSystem.AddTests(allTests);
-    testSystem.RunTests();
-
-    return EXIT_SUCCESS;
+    
+    return testSystem.RunTests();
 }
 
 vector<TestMethod> GetAllTests() {

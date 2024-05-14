@@ -7,18 +7,26 @@ on:
     branches: [ "master" ]
 
 jobs:
-  build:
+  build_projects:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
-    - name: Build make projects
+
+    - name: Build projects
       run: |
         echo "CI automatically triggered by ${{ github.event_name }} event." 
-        echo "Building CodeEXpander CLI tool..."
+        echo "Building CodeEXpander projects..."
         make build
-        echo "Finished building CodeEXpander CLI tool"
-    - name: Upload CLI artifact
+        echo "Finished building CodeEXpander projects"
+
+    - name: "Test project"
+      run: |
+        echo "Running CodeEXpander tests..."
+        make test
+        echo "Finished running CodeEXpander tests"
+
+    - name: Upload CodeEXpander CLI tool artifact
       uses: actions/upload-artifact@v4
       with:
         name: CodEXpander CLI tool

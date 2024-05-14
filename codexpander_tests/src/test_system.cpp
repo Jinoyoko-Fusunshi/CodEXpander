@@ -24,7 +24,7 @@ namespace CodEXpander::Tests {
         registeredTests.emplace_back(std::move(test));
     }
 
-    void TestSystem::RunTests() {
+    int TestSystem::RunTests() {
         vector<TestMethod> failedTests;
         vector<TestMethod> passedTests;
 
@@ -76,6 +76,8 @@ namespace CodEXpander::Tests {
         logger.PrintMessage(" of ", Color().White());
         logger.PrintInfoMessage(to_string(registeredTests.size()));
         logger.PrintLineMessage("", Color().White());
+
+        return failedTests.size() > 0 ? EXIT_FAILURE : EXIT_SUCCESS;
     }
 
     void TestSystem::AssertStrings(const string &expectedValue, const string &actualValue) {

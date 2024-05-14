@@ -23,7 +23,7 @@ namespace CodEXpander::Tests {
 
         void AddTests(const std::vector<TestMethod> &tests);
         void AddTest(const TestMethod &test);
-        void RunTests();
+        int RunTests();
 
         static TestMethod CreateTestMethod(const std::string name, void (*callback)()); 
         static void AssertStrings(const std::string &expectedValue, const std::string &actualValue);
