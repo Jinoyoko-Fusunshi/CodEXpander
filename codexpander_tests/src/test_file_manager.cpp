@@ -18,7 +18,7 @@ namespace CodEXpander::Tests {
         const string filePath = "./res/missing_file.cpp";
 
         const auto fileContentLines = ReadFileByLines(filePath);
-        TestSystem::AssertAreEqual<u64>(expectedLineCount, fileContentLines.size());
+        TestSystem::AssertValues<u64>(expectedLineCount, fileContentLines.size());
     }
 
     void TestFileManager_ReadFilesByLines_ExistingFile_ContentIsCorrect() {
@@ -34,7 +34,7 @@ namespace CodEXpander::Tests {
             const string &currentExpectedFileLine = expectedFileContent[i];
             string currentFileLine = fileContentLines[i];
             const auto lineIsEqual = currentExpectedFileLine == currentFileLine;
-            TestSystem::AssertAreEqual<bool>(true, lineIsEqual);
+            TestSystem::AssertValues<bool>(true, lineIsEqual);
         }
     }
 
@@ -47,8 +47,8 @@ namespace CodEXpander::Tests {
         const vector<string> headerOneContent = GetHeaderContent(tokens[0].fileName, workingDirectory);
         const vector<string> headerTwoContent = GetHeaderContent(tokens[1].fileName, workingDirectory);
 
-        TestSystem::AssertAreEqual<u64>(expectedHeaderContentSize, headerOneContent.size());
-        TestSystem::AssertAreEqual<u64>(expectedHeaderContentSize, headerTwoContent.size());
+        TestSystem::AssertValues<u64>(expectedHeaderContentSize, headerOneContent.size());
+        TestSystem::AssertValues<u64>(expectedHeaderContentSize, headerTwoContent.size());
     }
 
     void TestFileManager_TryWriteToFile_NoFilePath_NotWritingToFile() {
@@ -60,8 +60,8 @@ namespace CodEXpander::Tests {
         auto wroteToFile = TryWriteToFile(outputFile, fileContent);
         auto outputPathExists = exists(outputFilePath);
 
-        TestSystem::AssertAreEqual<bool>(expectedResult, wroteToFile);
-        TestSystem::AssertAreEqual<bool>(expectedResult, outputPathExists);
+        TestSystem::AssertValues<bool>(expectedResult, wroteToFile);
+        TestSystem::AssertValues<bool>(expectedResult, outputPathExists);
     }
 
     void TestFileManager_TryWriteToFile_NoFileContent_NotWritingToFile() {
@@ -73,8 +73,8 @@ namespace CodEXpander::Tests {
         auto wroteToFile = TryWriteToFile(outputFile, fileContent);
         auto outputPathExists = exists(outputFilePath);
 
-        TestSystem::AssertAreEqual<bool>(expectedResult, wroteToFile);
-        TestSystem::AssertAreEqual<bool>(expectedResult, outputPathExists);
+        TestSystem::AssertValues<bool>(expectedResult, wroteToFile);
+        TestSystem::AssertValues<bool>(expectedResult, outputPathExists);
     }
 
     void TestFileManager_TryWriteToFile_ValidPathAndContent_WritesToFile() {
@@ -91,13 +91,13 @@ namespace CodEXpander::Tests {
         auto wroteToFile = TryWriteToFile(outputFile, expandedSourceFile);
         auto outputPathExists = exists(outputFilePath);
 
-        TestSystem::AssertAreEqual<bool>(expectedResult, wroteToFile);
-        TestSystem::AssertAreEqual<bool>(expectedResult, outputPathExists);
+        TestSystem::AssertValues<bool>(expectedResult, wroteToFile);
+        TestSystem::AssertValues<bool>(expectedResult, outputPathExists);
 
         vector<string> outputFileContent = ReadFileByLines(outputFile);
-        TestSystem::AssertAreEqual<u64>(expandedSourceFile.size(), outputFileContent.size());
+        TestSystem::AssertValues<u64>(expandedSourceFile.size(), outputFileContent.size());
 
         for (auto i = 0; i < outputFileContent.size(); i++)
-            TestSystem::AssertStringsAreEqual(expandedSourceFile[i], outputFileContent[i]);
+            TestSystem::AssertStrings(expandedSourceFile[i], outputFileContent[i]);
     }
 }

@@ -6,6 +6,20 @@
 using std::string, std::vector, std::views::filter;
 
 namespace CodEXpander::Core {
+    string Command::ToString() {
+        string objectString = "Command { ";
+
+        objectString += "providedArguments: {";
+        for (auto& argument : providedArguments)
+            objectString += " name: " + argument.GetName() + "; " + "value: " + argument.GetValue() + "; ";
+
+        objectString += "}; ";
+        objectString += "name: " + name + ";";
+
+        objectString += " }";
+        return objectString;
+    }
+
     void Command::SetValidArguments(const vector<ValidArgument> validArguments) {
         this->validArguments = validArguments;
     }

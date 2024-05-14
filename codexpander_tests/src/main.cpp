@@ -18,7 +18,7 @@ int main(int argumentCount, char* arguments[]) {
     testSystem.AddTests(allTests);
     testSystem.RunTests();
 
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 vector<TestMethod> GetAllTests() {
@@ -40,12 +40,9 @@ vector<TestMethod> GetAllTests() {
         CreateNamedTestMethod(TestHeaderIncludeExpander_ExpandHeaderIncludes_NoInlcudes_FileContentIsEqual),
         CreateNamedTestMethod(TestHeaderIncludeExpander_ExpandHeaderIncludes_OneInlcude_NewFileContentIsCorrect),
 
-        CreateNamedTestMethod(TestCommandParser_ParseArguments_StringIsEmpty_NoArguments),
-        CreateNamedTestMethod(TestCommandParser_ParseArguments_ArgumentWithOnePrexifSymbol_ReturnsNoArguments),
-        CreateNamedTestMethod(TestCommandParser_TryGetArgument_NameIsEmpty_ReturnsFalse),
-        CreateNamedTestMethod(TestCommandParser_TryGetArgument_NameIsValid_ArgumentDoesNotExist_ReturnsFalse),
-        CreateNamedTestMethod(TestCommandParser_TryGetArgumentWithValue_ArgumentWithBothPrefixSymbol_ReturnsOneArgument),
-        CreateNamedTestMethod(TestCommandParser_TryGetArgumentWithValue_TwoArgumentsPresent_ReturnsTwoArguments),
-        CreateNamedTestMethod(TestCommandParser_TryGetArgumentWithValue_ArgumentHasNoValue_ReturnsArgumentHasNoValue)
+        CreateNamedTestMethod(TestCommandParser_TryParseCommand_NoCommandsProvided_NoCommandFound),
+        CreateNamedTestMethod(TestCommandParser_TryParseCommand_NoCommandsProvided_ArgumentsProvided_NoCommandFound),
+        CreateNamedTestMethod(TestCommandParser_TryParseCommand_CommandAndArgumentsProvided_CommandNotExisting_CommandNotFound),
+        CreateNamedTestMethod(TestCommandParser_TryParseCommand_CommandAndArgumentsProvided_CommandExist_CommandWasFound)
     };
 }

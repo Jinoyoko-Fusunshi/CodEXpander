@@ -4,6 +4,7 @@
 #include <vector>
 #include "declarations.h"
 #include "assertion_exception.h"
+#include "stringable.h"
 
 namespace CodEXpander::Tests {
     struct TestMethod {
@@ -25,8 +26,9 @@ namespace CodEXpander::Tests {
         void RunTests();
 
         static TestMethod CreateTestMethod(const std::string name, void (*callback)()); 
-        static void AssertStringsAreEqual(const std::string &expectedValue, const std::string &actualValue);
+        static void AssertStrings(const std::string &expectedValue, const std::string &actualValue);
 
-        template<typename T> static void AssertAreEqual(T expectedValue, T actualValue);
+        static void AssertObjects(CodEXpander::Core::Stringable *expectedValue, CodEXpander::Core::Stringable *actualValue);
+        template<typename T> static void AssertValues(T expectedValue, T actualValue);
     };
 }

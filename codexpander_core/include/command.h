@@ -4,6 +4,7 @@
 #include <vector>
 #include "argument.h"
 #include "logging.h"
+#include "stringable.h"
 
 namespace CodEXpander::Core {
     struct ValidArgument {
@@ -11,7 +12,7 @@ namespace CodEXpander::Core {
         bool needsValue;
     };
 
-    class Command {
+    class Command : public Stringable {
     protected:
         Logger &logger;
         std::string name;
@@ -24,7 +25,9 @@ namespace CodEXpander::Core {
     public:
         explicit Command(Logger &logger, std::vector<ValidArgument> validArguments, std::string name) : logger(logger), validArguments(validArguments), name(name) {}
 
+        std::string ToString();
         virtual void Execute() = 0;
+
         void SetValidArguments(const std::vector<ValidArgument> validArguments);
         void SetProvidedArguments(const std::vector<Argument> providedArguments);
         const std::string& GetName();

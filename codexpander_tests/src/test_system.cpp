@@ -3,18 +3,19 @@
 #include "color_builder.h"
 #include "test_system.h"
 #include "assertion_exception.h"
+#include "command.h"
 
 using std::string, std::vector, std::to_string, std::chrono::steady_clock, std::chrono::duration;
 using namespace CodEXpander::Core;
 
 namespace CodEXpander::Tests {
-    template void TestSystem::AssertAreEqual(u64 expectedValue, u64 actualValue);
-    template void TestSystem::AssertAreEqual(int expectedValue, int actualValue);
-    template void TestSystem::AssertAreEqual(bool expectedValue, bool actualValue);
+    template void TestSystem::AssertValues(u64 expectedValue, u64 actualValue);
+    template void TestSystem::AssertValues(int expectedValue, int actualValue);
+    template void TestSystem::AssertValues(bool expectedValue, bool actualValue);
 
     string GetElapsedTimeInSeconds(const steady_clock::time_point &start, const steady_clock::time_point &end);
 
-    void TestSystem::AddTests(const std::vector<TestMethod> &tests) {
+    void TestSystem::AddTests(const vector<TestMethod> &tests) {
         for (auto &test : tests)
             AddTest(test);
     }
@@ -47,15 +48,16 @@ namespace CodEXpander::Tests {
                 color = Color().Green();
                 passedTests.emplace_back(std::move(test));
             } catch (AssertionException ex) {
-                resultMessage = string("\tFAILED:") + string("\n\t\t") + ex.GetMessage();
+                resultMessage = string("\tFAILED -> ") + ex.GetMessage();
                 color = Color().Red();
                 failedTests.emplace_back(std::move(test));
             }
+            logger.PrintMessage(resultMessage, color);
+
             const auto testEndTime = steady_clock::now();
             const string elapsedSecondsMessage = GetElapsedTimeInSeconds(testStartTime, testEndTime);
-
-            logger.PrintMessage(resultMessage, color);
-            logger.PrintMessage(": \n\t\t" + elapsedSecondsMessage + "\n\n", Color().White());
+            auto runtimeMessage = string("\n\t") +  "Runtime: " + elapsedSecondsMessage + "\n\n";
+            logger.PrintMessage(runtimeMessage, Color::White());
         }
         const auto testsEndTime = steady_clock::now();
         const string elapsedSecondsMessage = GetElapsedTimeInSeconds(testsStartTime, testsEndTime);
@@ -76,30 +78,44 @@ namespace CodEXpander::Tests {
         logger.PrintLineMessage("", Color().White());
     }
 
-    void TestSystem::AssertStringsAreEqual(const std::string &expectedValue, const std::string &actualValue) {
+    void TestSystem::AssertStrings(const string &expectedValue, const string &actualValue) {
         if (expectedValue != actualValue) {
-            std::string message = std::string("Assertion failed:") + std::string("\n\t\t\texpected value: ")
-                + expectedValue + std::string("\n\t\t\tactual value: \t") + actualValue;
+            string message = string("Assertion failed:") + string("\n\t\t\texpected value: ")
+                + expectedValue + string("\n\t\t\tactual value: \t") + actualValue;
 
             throw AssertionException(message);
         }
     }
     
-    TestMethod TestSystem::CreateTestMethod(const std::string name, void (*callback)()) {
+    TestMethod TestSystem::CreateTestMethod(const string name, void (*callback)()) {
         return TestMethod {
             .testName = std::move(name),
             .callback = callback
         };       
     }
 
-    template<typename T> void TestSystem::AssertAreEqual(T expectedValue, T actualValue) {
-        auto valueMatches = expectedValue == actualValue;
-        if (!valueMatches) {
-            std::string message = std::string("Assertion failed:") + std::string("\n\t\t\texpected value: ")
-                + std::to_string(expectedValue) + std::string("\n\t\t\tactual value: \t") + std::to_string(actualValue);
+    void TestSystem::AssertObjects(Stringable* expectedValue, Stringable* actualValue) {
+        if (expectedValue == actualValue)
+            return;
 
-            throw AssertionException(message);
-        }
+        auto valueOrDefault = [](Stringable* stringable) {
+            return !stringable ? "NULL" : stringable->ToString();
+        };
+
+        string message = string("Assertion failed:") + string("\n\t\texpected value: \t") + valueOrDefault(expectedValue) 
+            + string("\n\t\tactual value value: \t") + valueOrDefault(actualValue);
+
+        throw AssertionException(message);
+    }
+
+    template<typename T> void TestSystem::AssertValues(T expectedValue, T actualValue) {
+        if (expectedValue == actualValue)
+            return;
+        
+        string message = string("Assertion failed:") + string("\n\t\t\texpected value: ")
+            + to_string(expectedValue) + string("\n\t\t\tactual value: \t") + to_string(actualValue);
+
+        throw AssertionException(message);
     }
 
     string GetElapsedTimeInSeconds(const steady_clock::time_point &start, const steady_clock::time_point &end) {
