@@ -12,16 +12,10 @@
 using std::vector, std::string, std::map, std::views::filter, std::pair, std::make_pair;
 
 namespace CodEXpander::Core {
-    void AddHeaderFileEntry(map<string, u64> &countedHeaderFiles, HeaderFileIncludes &headerFile);
+    void AddHeaderFileEntry(HeaderCountDictionary &countedHeaderFiles, HeaderFileIncludes &headerFile);
 
     HeaderDependencyGraph::HeaderDependencyGraph(const string &sourceFileName, const string &workingDirectory) {
-        const HeaderToken token = {
-            .fileName = sourceFileName,
-            .lineNumber = 0,
-            .headerType = HeaderFileType::Local
-        };
-        
-        headerIncludes.headerFile = token;
+        headerIncludes.headerFile = HeaderToken(sourceFileName, HeaderFileType::Local, 0);
         AddHeaderFiles(headerIncludes, sourceFileName, workingDirectory);
     }
 
@@ -62,44 +56,50 @@ namespace CodEXpander::Core {
         foundHeaderFiles.emplace_back(currentHeaderFile);
     }
 
-    vector<string> HeaderDependencyGraph::GetHeaderFilesSortedByOccurences() {
-        const map<string, u64> haederFilesByIncludeCount = CountHeaderOccurences();
-        vector<pair<string, u64>> countedHeaderFilesPairs;
+    vector<HeaderFile> HeaderDependencyGraph::GetHeaderFilesSortedByOccurences() {
+        const HeaderCountDictionary haederFilesByIncludeCount = CountHeaderOccurences();
+        vector<pair<string, HeaderFileCount>> countedHeaderFilesPairs;
         for (const auto &headerFileCountPair : haederFilesByIncludeCount)
             countedHeaderFilesPairs.emplace_back(headerFileCountPair);
 
-        const auto sortHeaderFilesByCount = [](pair<string, u64> current, pair<string, u64> next) {
-            return current.second >= next.second;
+        const auto sortHeaderFilesByCount = [](pair<string, HeaderFileCount> current, pair<string, HeaderFileCount> next) {
+            return current.second.occurenceCount >= next.second.occurenceCount;
         };
 
         sort(countedHeaderFilesPairs.begin(), countedHeaderFilesPairs.end(), sortHeaderFilesByCount);
-        vector<string> sortedHeaderFiles;
-        for (const auto &headerFileCountPair : countedHeaderFilesPairs)
-            sortedHeaderFiles.emplace_back(std::move(headerFileCountPair.first));
+        vector<HeaderFile> sortedHeaderFiles;
+        for (const auto &headerFileCountPair : countedHeaderFilesPairs) {
+            HeaderFile headerFile = headerFileCountPair.second.headerFile;
+            sortedHeaderFiles.emplace_back(headerFile);
+        }
 
         return std::move(sortedHeaderFiles);
     }
 
-    map<string, u64> HeaderDependencyGraph::CountHeaderOccurences() {
-        map<string, u64> headerFilesByIncludeCount;
+    HeaderCountDictionary HeaderDependencyGraph::CountHeaderOccurences() {
+        HeaderCountDictionary headerFilesByIncludeCount;
         AddHeaderFileEntry(headerFilesByIncludeCount, headerIncludes);  
         return std::move(headerFilesByIncludeCount);
     }
 
-    void AddHeaderFileEntry(map<string, u64> &countedHeaderFiles, HeaderFileIncludes &headerInclude) {
+    void AddHeaderFileEntry(HeaderCountDictionary &countedHeaderFiles, HeaderFileIncludes &headerInclude) {
         if (headerInclude.innerIncludes.size() != 0) {
             for (auto innerInclude : headerInclude.innerIncludes)
                 AddHeaderFileEntry(countedHeaderFiles, innerInclude);
         }
 
-        const auto headerFileName = headerInclude.headerFile.fileName;
+        string headerFileName = headerInclude.headerFile.fileName;
         if (countedHeaderFiles.contains(headerFileName)) {
-            u64 &headerFileCount = countedHeaderFiles[headerFileName];
+            u64 &headerFileCount = countedHeaderFiles[headerFileName].occurenceCount;
             headerFileCount += 1;
             return;
         }
 
-        const auto newPair = std::make_pair<string, u64>(std::move(headerInclude.headerFile.fileName), 1);
+        HeaderFileCount fileCount = {
+            .headerFile = headerInclude.headerFile,
+            .occurenceCount = 1
+        };
+        const auto newPair = std::make_pair<string, HeaderFileCount>(std::move(headerFileName), std::move(fileCount));
         countedHeaderFiles.insert(std::move(newPair));
     }
 }

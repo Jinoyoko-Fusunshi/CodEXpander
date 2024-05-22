@@ -30,7 +30,7 @@ namespace CodEXpander::Core {
     IncludeEntry FindTag(const string &line, const string& tag, u64 startPosition,
         HeaderFileType headerType, IncludeTagType tagType);
 
-    vector<string> ExpandHeaderIncludes(const string &sourceFile, vector<string> headerFiles, const string &workingDirectory) {
+    vector<string> ExpandHeaderIncludes(const string &sourceFile, vector<HeaderFile> headerFiles, const string &workingDirectory) {
         u64 lineOffset = 0;
         const vector<HeaderToken> headerTokens = GetTokensFromFile(sourceFile);
         if (headerTokens.size() == 0)
@@ -53,7 +53,7 @@ namespace CodEXpander::Core {
         return std::move(sourceFileContent);
     }
 
-    void ExpandHeaderInclude(vector<string> &fileContent, string &headerFile, const string &workingDirectory, u64 lineIndex, u64 &linesOffset)  {
+    void ExpandHeaderInclude(vector<string> &fileContent, HeaderFile &headerFile, const string &workingDirectory, u64 lineIndex, u64 &linesOffset)  {
         vector<string> headerContent = GetHeaderContent(headerFile, workingDirectory);
         const auto headerContentSize = headerContent.size();
         if (headerContentSize == 0)
@@ -121,11 +121,7 @@ namespace CodEXpander::Core {
         const auto headerFileNameLength = (closingTag.position - 1) - startingTag.position;
         const auto headerFileName = line.substr(startingTag.position + 1, headerFileNameLength);
 
-        foundHeaderToken = HeaderToken {
-            .fileName = std::move(headerFileName),
-            .lineNumber = lineNumber,
-            .headerType = closingTag.headerType
-        };
+        foundHeaderToken = HeaderToken(headerFileName, closingTag.headerType, lineNumber);
         return true;
     }
 
@@ -145,14 +141,14 @@ namespace CodEXpander::Core {
         return true;
     }
 
-    vector<string> GetHeaderContent(const string &headerFileName, const string &workingDirectory) {
+    vector<string> GetHeaderContent(const HeaderFile &headerFile, const string &workingDirectory) {
         const string includeDirectory = workingDirectory + "/include";
         vector<string> headerContent; 
         path includePath(includeDirectory);
         if (!exists(includePath))
             return std::move(headerContent);
         
-        const string relativeHeaderFilePath = includeDirectory + "/" + headerFileName;
+        const string relativeHeaderFilePath = includeDirectory + "/" + headerFile.fileName;
         const path headerFilePath(relativeHeaderFilePath);
         if (!exists(headerFilePath))
             return std::move(headerContent);

@@ -6,9 +6,9 @@
 #include "declarations.h"
 
 namespace CodEXpander::Core {
-    std::vector<std::string> ExpandHeaderIncludes(const std::string &sourceFile, std::vector<std::string> headerFiles, const std::string &workingDirectory);
+    std::vector<std::string> ExpandHeaderIncludes(const std::string &sourceFile, std::vector<HeaderFile> headerFiles, const std::string &workingDirectory);
 
-    void ExpandHeaderInclude(std::vector<std::string> &fileContent, std::string &headerFile, const std::string &workingDirectory, u64 lineIndex, u64 &linesOffset);
+    void ExpandHeaderInclude(std::vector<std::string> &fileContent, HeaderFile &headerFile, const std::string &workingDirectory, u64 lineIndex, u64 &linesOffset);
 
     std::vector<HeaderToken> GetTokensFromFile(const std::string &filePath);
 
@@ -16,5 +16,5 @@ namespace CodEXpander::Core {
 
     bool TryGetPrgramaDirective(std::string &line, u64 lineNumber, std::string &foundDirective);
 
-    std::vector<std::string> GetHeaderContent(const std::string &headerFileName, const std::string &workingDirectory);
+    std::vector<std::string> GetHeaderContent(const HeaderFile &headerFile, const std::string &workingDirectory);
 }

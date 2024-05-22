@@ -2,7 +2,7 @@
 #include "expand_command.h"
 #include "header_dependy_finder.h"
 
-using std::string;
+using std::string, std::vector;
 
 namespace CodEXpander::Core {
     void WriteExpandedContentToFile(const string &sourceFile, string &outputFile, string &workingDirectory);
@@ -30,8 +30,8 @@ namespace CodEXpander::Core {
 
     void WriteExpandedContentToFile(const string &sourceFile, string &outputFile, string &workingDirectory) {
         HeaderDependencyGraph dependencyGraph(sourceFile, workingDirectory);
-        const auto countedHeaderFiles = dependencyGraph.GetHeaderFilesSortedByOccurences();
-        const auto expandedSourceFileContent = ExpandHeaderIncludes(sourceFile, countedHeaderFiles, workingDirectory);
-        const auto wroteToFile = TryWriteToFile(outputFile, expandedSourceFileContent);
+        const vector<HeaderFile> countedHeaderFiles = dependencyGraph.GetHeaderFilesSortedByOccurences();
+        const vector<string> expandedSourceFileContent = ExpandHeaderIncludes(sourceFile, countedHeaderFiles, workingDirectory);
+        const bool wroteToFile = TryWriteToFile(outputFile, expandedSourceFileContent);
     }
 }

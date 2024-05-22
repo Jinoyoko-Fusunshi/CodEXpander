@@ -16,6 +16,13 @@ namespace CodEXpander::Core {
         std::vector<HeaderFileIncludes> innerIncludes;
     };
 
+    struct HeaderFileCount {
+        HeaderFile headerFile;
+        u64 occurenceCount;
+    };
+
+    using HeaderCountDictionary = std::map<std::string, HeaderFileCount>;
+
     class HeaderDependencyGraph final {
     private:
         std::vector<HeaderFileIncludes> foundHeaderFiles;
@@ -29,7 +36,7 @@ namespace CodEXpander::Core {
         ~HeaderDependencyGraph() = default;
 
         void RegisterHeader(HeaderFileIncludes headerFile);
-        std::vector<std::string> GetHeaderFilesSortedByOccurences();
-        std::map<std::string, u64> CountHeaderOccurences();
+        std::vector<HeaderFile> GetHeaderFilesSortedByOccurences();
+        HeaderCountDictionary CountHeaderOccurences();
     };
 }

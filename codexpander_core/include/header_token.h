@@ -9,9 +9,19 @@ namespace CodEXpander::Core {
         External
     };
 
-    struct HeaderToken {
-        std::string fileName;
-        u64 lineNumber;
-        HeaderFileType headerType;
+    struct HeaderFile {
+        std::string fileName = "";
+        HeaderFileType headerType = HeaderFileType::Local;
+
+        HeaderFile() = default;
+        explicit HeaderFile(std::string fileName, HeaderFileType headerType) : fileName(fileName), headerType(headerType) {}
+    };
+
+    struct HeaderToken final : public HeaderFile {
+        u64 lineNumber = 0;
+
+        HeaderToken() = default;
+        explicit HeaderToken(std::string fileName, HeaderFileType headerType, u64 lineNumber) 
+            : HeaderFile(fileName, headerType), lineNumber(lineNumber) {}
     };
 }
