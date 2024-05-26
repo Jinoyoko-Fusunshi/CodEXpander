@@ -9,64 +9,55 @@
 using std::vector, std::string, std::distance, std::ofstream, std::endl, std::find, std::optional, std::nullopt, std::filesystem::path;
 
 namespace CodEXpander::Core {
-    enum class IncludeTagType {
+    enum class IncludeTagPosition {
         None = 0,
         Start,
         End
     };
 
-    struct IncludeEntry {
+    struct IncludeTag final {
         u64 position;
         HeaderFileType headerType;
-        IncludeTagType tagType;
+        IncludeTagPosition tagType;
     };
 
-    u64 FindIncludeMacro(const string &line);
+    struct IncludeTagDefinition final {
+        string startingTag;
+        string closingTag;
+        HeaderFileType headerType;
+    };
 
-    optional<IncludeEntry> FindIncludeStartingTag(const string &line, const u64 startPosition);
+    const u64 FindIncludeMacro(const string &line);
+    const optional<IncludeTag> FindIncludeStartingTag(const string &line, const u64 startPosition);
+    const optional<IncludeTag> FindIncludeClosingTag(const string &line, const u64 startPosition);
+    const u64 FindTagPosition(const string &line, const string& tag, const u64 startPosition);
 
-    optional<IncludeEntry> FindIncludeClosingTag(const string &line, const u64 startPosition);
+    const IncludeTagDefinition localTag = {
+        .startingTag = "\"",
+        .closingTag = "\"",
+        .headerType = HeaderFileType::Local
+    };
 
-    IncludeEntry FindTag(const string &line, const string& tag, u64 startPosition,
-        HeaderFileType headerType, IncludeTagType tagType);
+    const IncludeTagDefinition externalTag = {
+        .startingTag = "<",
+        .closingTag = ">",
+        .headerType = HeaderFileType::External
+    };
 
-    vector<string> ExpandHeaderIncludes(const string &sourceFile, vector<HeaderFile> headerFiles, const string &workingDirectory) {
-        u64 lineOffset = 0;
-        const vector<HeaderToken> headerTokens = GetTokensFromFile(sourceFile);
-        if (headerTokens.size() == 0)
-            return vector<string>();
-
-        auto sourceFileContent = ReadFileByLines(sourceFile);
-        const auto firstHeaderIncludeIndex = headerTokens[0].lineNumber -1;
-        for (const auto &headerInclude : headerTokens) {
-            const auto lineIndex = headerInclude.lineNumber - lineOffset -1;
-            const auto linePosition = sourceFileContent.begin() + lineIndex;
-
-            sourceFileContent.erase(linePosition);
-            lineOffset += 1;
-        }
-
-        lineOffset = 0;
-        for (auto &headerFile : headerFiles)
-            ExpandHeaderInclude(sourceFileContent, headerFile, workingDirectory, firstHeaderIncludeIndex + lineOffset, lineOffset);
-
-        return std::move(sourceFileContent);
-    }
-
-    void ExpandHeaderInclude(vector<string> &fileContent, HeaderFile &headerFile, const string &workingDirectory, u64 lineIndex, u64 &linesOffset)  {
+    void ExpandHeaderInclude(vector<string> &fileContent, const HeaderFile &headerFile, const string &workingDirectory, const u64 lineIndex, u64 &linesOffset)  {
         vector<string> headerContent = GetHeaderContent(headerFile, workingDirectory);
-        const auto headerContentSize = headerContent.size();
+        const u64 headerContentSize = headerContent.size();
         if (headerContentSize == 0)
             return;
 
-        auto copiedLinesCount = 0;
+        int copiedLinesCount = 0;
         for (u64 i = 0; i < headerContentSize; i++) {
             auto nextLinePosition = fileContent.begin() + lineIndex + copiedLinesCount;
             const u64 nextLineIndex = distance(fileContent.begin(), nextLinePosition);
             if (nextLineIndex >= fileContent.size())
                 nextLinePosition = fileContent.end();
 
-            const auto currentLineNumber = i + 1;
+            const long currentLineNumber = i + 1;
             string &currentLine = headerContent[i];
             if (HeaderToken token; TryGetHeaderToken(currentLine, currentLineNumber, token))
                 continue;
@@ -83,12 +74,35 @@ namespace CodEXpander::Core {
         linesOffset += copiedLinesCount;
     }
 
-    vector<HeaderToken> GetTokensFromFile(const string &filePath) {
+    const vector<string> ExpandHeaderIncludes(const string &sourceFile, vector<HeaderFile> headerFiles, const string &workingDirectory) {
+        u64 lineOffset = 0;
+        const vector<HeaderToken> headerTokens = GetTokensFromFile(sourceFile);
+        if (headerTokens.size() == 0)
+            return vector<string>();
+
+        vector<string> sourceFileContent = ReadFileByLines(sourceFile);
+        const long firstHeaderIncludeIndex = headerTokens[0].lineNumber -1;
+        for (const auto &headerInclude : headerTokens) {
+            const long lineIndex = headerInclude.lineNumber - lineOffset -1;
+            const auto linePosition = sourceFileContent.begin() + lineIndex;
+
+            sourceFileContent.erase(linePosition);
+            lineOffset += 1;
+        }
+
+        lineOffset = 0;
+        for (const auto &headerFile : headerFiles)
+            ExpandHeaderInclude(sourceFileContent, headerFile, workingDirectory, firstHeaderIncludeIndex + lineOffset, lineOffset);
+
+        return std::move(sourceFileContent);
+    }
+
+    const vector<HeaderToken> GetTokensFromFile(const string &filePath) {
         vector<HeaderToken> foundTokens;
         vector<string> fileContentByLines = ReadFileByLines(filePath);
 
         for (u64 i = 0; i < fileContentByLines.size(); i++) {
-            auto &currentLine = fileContentByLines[i];
+            string &currentLine = fileContentByLines[i];
             
             HeaderToken foundHeaderToken;
             if (!TryGetHeaderToken(currentLine, i + 1, foundHeaderToken))
@@ -100,48 +114,7 @@ namespace CodEXpander::Core {
         return std::move(foundTokens);
     }
 
-    bool TryGetHeaderToken(string &line, const u64 lineNumber, HeaderToken &foundHeaderToken) {
-        const u64 includePosition = FindIncludeMacro(line);
-        if (includePosition == string::npos)
-            return false;
-
-        optional<IncludeEntry> startingTagResult = FindIncludeStartingTag(line, includePosition);
-        if (!startingTagResult)
-            return false;
-
-        const auto startingTag = startingTagResult.value();
-        optional<IncludeEntry> closingTagResult = FindIncludeClosingTag(line, startingTag.position + 1);
-        if (!closingTagResult)
-            return false;
-
-        const auto closingTag = closingTagResult.value();
-        if (startingTag.position >= closingTag.position || startingTag.headerType != closingTag.headerType)
-            return false;
-
-        const auto headerFileNameLength = (closingTag.position - 1) - startingTag.position;
-        const auto headerFileName = line.substr(startingTag.position + 1, headerFileNameLength);
-
-        foundHeaderToken = HeaderToken(headerFileName, closingTag.headerType, lineNumber);
-        return true;
-    }
-
-    bool TryGetPrgramaDirective(std::string &line, const u64 lineNumber, std::string &foundDirective) {
-        const string pragmaMacroStatement = "#pragma";
-        const u64 pragmaMacroPosition = line.find(pragmaMacroStatement);
-
-        if (pragmaMacroPosition == string::npos)
-            return false;
-
-        auto pragmaStatementSize = pragmaMacroStatement.size();
-        if (line.size() == pragmaStatementSize)
-            return false;
-
-        u64 pragmaValueSize = line.size() - 1 - pragmaStatementSize;
-        foundDirective = line.substr(pragmaStatementSize + 1, pragmaValueSize);
-        return true;
-    }
-
-    vector<string> GetHeaderContent(const HeaderFile &headerFile, const string &workingDirectory) {
+    const vector<string> GetHeaderContent(const HeaderFile &headerFile, const string &workingDirectory) {
         const string includeDirectory = workingDirectory + "/include";
         vector<string> headerContent; 
         path includePath(includeDirectory);
@@ -161,48 +134,91 @@ namespace CodEXpander::Core {
         return std::move(headerContent);
     }
 
-    u64 FindIncludeMacro(const string &line) {
+    const bool TryGetHeaderToken(const string &line, const u64 lineNumber, HeaderToken &foundHeaderToken) {
+        const u64 includePosition = FindIncludeMacro(line);
+        if (includePosition == string::npos)
+            return false;
+
+        optional<IncludeTag> startingTagResult = FindIncludeStartingTag(line, includePosition);
+        if (!startingTagResult)
+            return false;
+
+        const IncludeTag startingTag = startingTagResult.value();
+        optional<IncludeTag> closingTagResult = FindIncludeClosingTag(line, startingTag.position + 1);
+        if (!closingTagResult)
+            return false;
+
+        const IncludeTag closingTag = closingTagResult.value();
+        if (startingTag.position >= closingTag.position || startingTag.headerType != closingTag.headerType)
+            return false;
+
+        const long headerFileNameLength = (closingTag.position - 1) - startingTag.position;
+        const string headerFileName = line.substr(startingTag.position + 1, headerFileNameLength);
+
+        foundHeaderToken = HeaderToken(headerFileName, closingTag.headerType, lineNumber);
+        return true;
+    }
+
+    const bool TryGetPrgramaDirective(const std::string &line, const u64 lineNumber, std::string &foundDirective) {
+        const string pragmaMacroStatement = "#pragma";
+        const u64 pragmaMacroPosition = line.find(pragmaMacroStatement);
+
+        if (pragmaMacroPosition == string::npos)
+            return false;
+
+        const u64 pragmaStatementSize = pragmaMacroStatement.size();
+        if (line.size() == pragmaStatementSize)
+            return false;
+
+        const u64 pragmaValueSize = line.size() - 1 - pragmaStatementSize;
+        foundDirective = line.substr(pragmaStatementSize + 1, pragmaValueSize);
+        return true;
+    }
+
+    const u64 FindIncludeMacro(const string &line) {
         const string includeMacroStatement = "#include";
         const u64 includeMacroPosition = line.find(includeMacroStatement);
         return includeMacroPosition;
     }
 
-    optional<IncludeEntry> FindIncludeStartingTag(const string &line, const u64 startPosition) {
-        const string localIncludeStartTag = "\"";
-        const string externalIncludeStartTag = "<";
-        const IncludeEntry localStartingTag = FindTag(line, localIncludeStartTag, startPosition, HeaderFileType::Local, IncludeTagType::Start);
-        const IncludeEntry externalStartingTag = FindTag(line, externalIncludeStartTag, startPosition, HeaderFileType::External, IncludeTagType::Start);
+    const optional<IncludeTag> FindIncludeStartingTag(const string &line, const u64 startPosition) {   
+        if (const u64 localStartingTag = FindTagPosition(line, localTag.startingTag, startPosition); localStartingTag != string::npos) {
+            return IncludeTag {
+                .position = localStartingTag,
+                .headerType = localTag.headerType,
+            };
+        }
 
-        if (localStartingTag.position != string::npos)
-            return { localStartingTag };
-
-        if (externalStartingTag.position != string::npos)
-            return { externalStartingTag };
-
-        return nullopt;
-    }
-
-    optional<IncludeEntry> FindIncludeClosingTag(const string &line, const u64 startPosition) {
-        const string localIncludeClosingTag = "\"";
-        const string externalIncludeClosingTag = ">";
-        const IncludeEntry localClosingTag = FindTag(line, localIncludeClosingTag, startPosition, HeaderFileType::Local, IncludeTagType::End);
-        const IncludeEntry externalClosingTag = FindTag(line, externalIncludeClosingTag, startPosition, HeaderFileType::External, IncludeTagType::End);
-
-        if (localClosingTag.position != string::npos)
-            return { localClosingTag };
-
-        if (externalClosingTag.position != string::npos)
-            return { externalClosingTag };
+        if (const u64 externalStartingTag = FindTagPosition(line, externalTag.startingTag, startPosition); externalStartingTag != string::npos) {
+            return IncludeTag {
+                .position = externalStartingTag,
+                .headerType = externalTag.headerType,
+            };
+        }
 
         return nullopt;
     }
 
-    IncludeEntry FindTag(const string &line, const string& tag, const u64 startPosition, const HeaderFileType headerType, const IncludeTagType tagType) {
+    const optional<IncludeTag> FindIncludeClosingTag(const string &line, const u64 startPosition) {   
+        if (const u64 localClosingTagPosition = FindTagPosition(line, localTag.closingTag, startPosition); localClosingTagPosition != string::npos) {
+            return IncludeTag {
+                .position = localClosingTagPosition,
+                .headerType = localTag.headerType,
+            };
+        }
+
+        if (const u64 externalClosingTagPosition = FindTagPosition(line, externalTag.closingTag, startPosition); externalClosingTagPosition != string::npos) {
+            return IncludeTag {
+                .position = externalClosingTagPosition,
+                .headerType = externalTag.headerType,
+            };
+        }
+
+        return nullopt;
+    }
+
+    const u64 FindTagPosition(const string &line, const string& tag, const u64 startPosition) {
         const u64 tagPosition = line.find(tag, startPosition);
-        return IncludeEntry {
-            .position = tagPosition,
-            .headerType = headerType,
-            .tagType = tagType
-        };
-    } 
+        return tagPosition;
+    }
 }
