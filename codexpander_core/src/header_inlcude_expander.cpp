@@ -32,16 +32,16 @@ namespace CodEXpander::Core {
     const optional<IncludeTag> FindIncludeClosingTag(const string &line, const u64 startPosition);
     const u64 FindTagPosition(const string &line, const string& tag, const u64 startPosition);
 
-    const IncludeTagDefinition localTag = {
+    const IncludeTagDefinition localIncludeTag = {
         .startingTag = "\"",
         .closingTag = "\"",
         .headerType = HeaderFileType::Local
     };
 
-    const IncludeTagDefinition externalTag = {
+    const IncludeTagDefinition systemIncludeTag = {
         .startingTag = "<",
         .closingTag = ">",
-        .headerType = HeaderFileType::External
+        .headerType = HeaderFileType::System
     };
 
     void ExpandHeaderInclude(vector<string> &fileContent, const HeaderFile &headerFile, const string &workingDirectory, const u64 lineIndex, u64 &linesOffset)  {
@@ -81,18 +81,24 @@ namespace CodEXpander::Core {
             return vector<string>();
 
         vector<string> sourceFileContent = ReadFileByLines(sourceFile);
-        const long firstHeaderIncludeIndex = headerTokens[0].lineNumber -1;
-        for (const auto &headerInclude : headerTokens) {
-            const long lineIndex = headerInclude.lineNumber - lineOffset -1;
-            const auto linePosition = sourceFileContent.begin() + lineIndex;
+        long expansionStartLineIndex = -1;
 
+        for (const auto &headerToken : headerTokens) {
+            if (headerToken.headerType == HeaderFileType::System)
+                continue;
+
+            const long lineIndex = headerToken.lineNumber - lineOffset -1;
+            if (headerToken.headerType == HeaderFileType::Local && expansionStartLineIndex == -1)
+                expansionStartLineIndex = lineIndex;
+
+            const auto linePosition = sourceFileContent.begin() + lineIndex;
             sourceFileContent.erase(linePosition);
             lineOffset += 1;
         }
 
         lineOffset = 0;
         for (const auto &headerFile : headerFiles)
-            ExpandHeaderInclude(sourceFileContent, headerFile, workingDirectory, firstHeaderIncludeIndex + lineOffset, lineOffset);
+            ExpandHeaderInclude(sourceFileContent, headerFile, workingDirectory, expansionStartLineIndex + lineOffset, lineOffset);
 
         return std::move(sourceFileContent);
     }
@@ -182,17 +188,17 @@ namespace CodEXpander::Core {
     }
 
     const optional<IncludeTag> FindIncludeStartingTag(const string &line, const u64 startPosition) {   
-        if (const u64 localStartingTag = FindTagPosition(line, localTag.startingTag, startPosition); localStartingTag != string::npos) {
+        if (const u64 localStartingTag = FindTagPosition(line, localIncludeTag.startingTag, startPosition); localStartingTag != string::npos) {
             return IncludeTag {
                 .position = localStartingTag,
-                .headerType = localTag.headerType,
+                .headerType = localIncludeTag.headerType,
             };
         }
 
-        if (const u64 externalStartingTag = FindTagPosition(line, externalTag.startingTag, startPosition); externalStartingTag != string::npos) {
+        if (const u64 externalStartingTag = FindTagPosition(line, systemIncludeTag.startingTag, startPosition); externalStartingTag != string::npos) {
             return IncludeTag {
                 .position = externalStartingTag,
-                .headerType = externalTag.headerType,
+                .headerType = systemIncludeTag.headerType,
             };
         }
 
@@ -200,17 +206,17 @@ namespace CodEXpander::Core {
     }
 
     const optional<IncludeTag> FindIncludeClosingTag(const string &line, const u64 startPosition) {   
-        if (const u64 localClosingTagPosition = FindTagPosition(line, localTag.closingTag, startPosition); localClosingTagPosition != string::npos) {
+        if (const u64 localClosingTagPosition = FindTagPosition(line, localIncludeTag.closingTag, startPosition); localClosingTagPosition != string::npos) {
             return IncludeTag {
                 .position = localClosingTagPosition,
-                .headerType = localTag.headerType,
+                .headerType = localIncludeTag.headerType,
             };
         }
 
-        if (const u64 externalClosingTagPosition = FindTagPosition(line, externalTag.closingTag, startPosition); externalClosingTagPosition != string::npos) {
+        if (const u64 externalClosingTagPosition = FindTagPosition(line, systemIncludeTag.closingTag, startPosition); externalClosingTagPosition != string::npos) {
             return IncludeTag {
                 .position = externalClosingTagPosition,
-                .headerType = externalTag.headerType,
+                .headerType = systemIncludeTag.headerType,
             };
         }
 

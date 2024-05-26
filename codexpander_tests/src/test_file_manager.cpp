@@ -44,8 +44,8 @@ namespace CodEXpander::Tests {
         const string workingDirectory = "./res";
 
         vector<HeaderToken> tokens = GetTokensFromFile(filePath);
-        const vector<string> headerOneContent = GetHeaderContent(tokens[0].fileName, workingDirectory);
-        const vector<string> headerTwoContent = GetHeaderContent(tokens[1].fileName, workingDirectory);
+        const vector<string> headerOneContent = GetHeaderContent(tokens[0], workingDirectory);
+        const vector<string> headerTwoContent = GetHeaderContent(tokens[1], workingDirectory);
 
         TestSystem::AssertValues<u64>(expectedHeaderContentSize, headerOneContent.size());
         TestSystem::AssertValues<u64>(expectedHeaderContentSize, headerTwoContent.size());

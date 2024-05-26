@@ -41,7 +41,7 @@ namespace CodEXpander::Tests {
 
     void TestHeaderIncludeExpander_GetTokensFromFile_FoundTwoExternalTokens_TokensAreCorrect() {
         const u64 expectedHeaderTokenCount = 2;
-        const auto expectedHeaderType = static_cast<int>(HeaderFileType::External);
+        const auto expectedHeaderType = static_cast<int>(HeaderFileType::System);
         const string expectedHeaderOneFileName = "test_file_one.h";
         const string expectedHeaderTwoFileName = "test_file_two.h";
         const unsigned int expectedHeaderOneLineNumber = 6;
@@ -61,7 +61,7 @@ namespace CodEXpander::Tests {
 
     void TestHeaderIncludeExpander_GetTokensFromFile_FoundExternalAndLocalTokens_TokensAreCorrect() {
         const u64 expectedHeaderTokenCount = 2;
-        const auto expectedHeaderOneType = static_cast<int>(HeaderFileType::External);
+        const auto expectedHeaderOneType = static_cast<int>(HeaderFileType::System);
         const auto expectedHeaderTwoType = static_cast<int>(HeaderFileType::Local);
         const string expectedHeaderOneFileName = "test_file_one.h";
         const string expectedHeaderTwoFileName = "test_file_two.h";
@@ -101,7 +101,7 @@ namespace CodEXpander::Tests {
         const string workingDirectory = "./res";
 
         vector<HeaderToken> tokens = GetTokensFromFile(filePath);
-        const vector<string> headerContent = GetHeaderContent(tokens[0].fileName, workingDirectory);
+        const vector<string> headerContent = GetHeaderContent(tokens[0], workingDirectory);
 
         TestSystem::AssertValues<u64>(expectedHeaderContentSize, headerContent.size());        
     }
@@ -151,7 +151,7 @@ namespace CodEXpander::Tests {
         const vector<HeaderToken> includeHeaders = GetTokensFromFile(filePath);
 
         HeaderDependencyGraph dependencyGraph(filePath, workingDirectory);
-        vector<string> sortedHeaderFileIncludes = dependencyGraph.GetHeaderFilesSortedByOccurences();
+        vector<HeaderFile> sortedHeaderFileIncludes = dependencyGraph.GetHeaderFilesSortedByOccurences();
         vector<string> expandedSourceFile = ExpandHeaderIncludes(filePath, sortedHeaderFileIncludes, workingDirectory);
         TestSystem::AssertValues<u64>(expectedFileContent.size(), expandedSourceFile.size());
 
